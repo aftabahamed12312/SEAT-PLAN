@@ -21,6 +21,8 @@ npm run dev
 
 The preview is served locally by Wrangler. Re-run the build after changing `seat-planner.html`.
 
+Generated plans are saved in the browser with the seating assignments and per-room summary report, and can be loaded again on the same device and browser.
+
 ## Deploy to Cloudflare Pages
 
 Authenticate Wrangler with your Cloudflare account, then deploy to the `seat-plan` Pages project:

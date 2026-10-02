@@ -188,6 +188,25 @@ function refreshSavedPlans(selectedId=''){
  $('deletePlan').disabled=!saved.length;
  return true;
 }
+function buildSummaryReport(seatingPlan){
+ return {
+  totalStudents:seatingPlan.T,
+  rooms:seatingPlan.rl.map(room=>{
+   const rollsByClass=new Map();
+   room.rows.forEach(row=>row.cells.forEach(cell=>{
+    if(!cell)return;
+    if(!rollsByClass.has(cell.g))rollsByClass.set(cell.g,[]);
+    rollsByClass.get(cell.g).push(cell.r);
+   }));
+   return {
+    name:room.name,total:room.cnt,totalRows:room.totalRows,capacity:room.capacity,split:room.split,
+    classes:[...rollsByClass].map(([classIndex,rolls])=>({
+     classIndex,label:lab(seatingPlan.gs[classIndex]),total:rolls.length,rolls:rolls.sort((a,b)=>a-b)
+    }))
+   };
+  })
+ };
+}
 function saveCurrentPlan(){
  const saved=readSavedPlans();
  if(!saved)return false;
@@ -200,7 +219,8 @@ function saveCurrentPlan(){
   school:$('school').value,location:$('location').value,exam:$('exam').value,date:$('date').value,
   groups,rooms,nrooms:$('nrooms').value,start:$('start').value,prefix:$('prefix').value,
   rows:$('rows').value,twoSides:$('twoSides').checked,benches:$('benches').value,per:$('per').value,
-  orient:$('orient').value,mix:$('mix').value
+  orient:$('orient').value,mix:$('mix').value,
+  generatedPlan:plan,summaryReport:buildSummaryReport(plan)
  };
  try{
   const index=saved.findIndex(item=>item.id===id);
@@ -227,7 +247,11 @@ function restoreSavedPlan(){
  $('nrooms').value=s.nrooms||rooms.length;$('start').value=s.start||'0';$('prefix').value=s.prefix||'Room';
  $('rows').value=s.rows||'6';$('twoSides').checked=!!s.twoSides;$('benches').value=s.benches||'4';$('per').value=s.per||'2';
  $('orient').value=s.orient||'portrait';$('mix').value=s.mix||'mix';
- drawGroups();drawRooms();generate(false);
+ drawGroups();drawRooms();
+ if(s.generatedPlan&&Array.isArray(s.generatedPlan.gs)&&Array.isArray(s.generatedPlan.rl)&&
+    s.summaryReport&&Array.isArray(s.summaryReport.rooms)&&s.summaryReport.rooms.length===s.generatedPlan.rl.length){
+  plan={...s.generatedPlan,summaryReport:s.summaryReport};render();
+ }else generate(false);
  if(plan)say(`Loaded "${record.name}". Make seating plan to save any changes.`);
 }
 function deleteSavedPlan(){
@@ -388,6 +412,7 @@ function generate(save=true){
 function render(){
  if(!plan)return;
  const {gs,rl,T}=plan,land=$('orient').value==='landscape',L=land?'land':'';
+ const summaryReport=plan.summaryReport||buildSummaryReport(plan);
  $('pg').textContent=`@page{size:A4 ${land?'landscape':'portrait'};margin:10mm}`;
  const dt=$('date').value?new Date($('date').value).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}):'';
  const head=r=>`<header class="print-head"><h3>${esc($('school').value)}</h3>${$('location').value.trim()?`<div class="location">${esc($('location').value)}</div>`:''}<div class="exam">${esc($('exam').value)}${dt?` - ${dt}`:''}</div><div class="title">Seat Planning</div><div class="room">Room no.: ${esc(r.name)}</div></header>`;
@@ -411,10 +436,10 @@ function render(){
    const sideA=r.rows.filter(row=>row.side===0),sideB=r.rows.filter(row=>row.side===1);
    drawBank(sideA);drawBank(sideB);
   }else drawBank(r.rows);
-  const ids=Object.keys(stats[k]).map(Number).sort((a,b)=>a-b);
+  const roomSummary=summaryReport.rooms[k];
   h+=`</div><table class="print-summary"><thead><tr><th>Class</th><th>Roll no.</th><th>Total</th></tr></thead><tbody>`;
-  ids.forEach(gi=>h+=`<tr><td>${lab(gs[gi])}</td><td class="rolls">${[...stats[k][gi]].sort((a,b)=>a-b).join(',')}</td><td>${stats[k][gi].length}</td></tr>`);
-  h+=`</tbody><tfoot><tr><td colspan="2">Total students</td><td>${r.cnt}</td></tr></tfoot></table></div>`;
+  roomSummary.classes.forEach(entry=>h+=`<tr><td>${entry.label}</td><td class="rolls">${entry.rolls.join(',')}</td><td>${entry.total}</td></tr>`);
+  h+=`</tbody><tfoot><tr><td colspan="2">Total students</td><td>${roomSummary.total}</td></tr></tfoot></table></div>`;
  });
  $('out').innerHTML=h;
 }
