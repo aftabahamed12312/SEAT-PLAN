@@ -25,6 +25,8 @@ input:focus-visible,select:focus-visible,button:focus-visible{outline:3px solid 
 .grp{display:grid;grid-template-columns:1fr 1fr 1.2fr auto;gap:6px;align-items:end;margin-bottom:6px}
 .grp label{margin:0 0 2px;font-size:12px}
 .rhead,.rm{display:grid;grid-template-columns:1.4fr .7fr .8fr .9fr .6fr auto auto;gap:5px;align-items:center;margin-bottom:5px}
+.checkline{display:flex;align-items:center;gap:5px;font-size:13px;color:var(--ink);margin:4px 0}
+.checkline input{width:auto;margin:0}
 .ed{grid-column:1/-1;border:1px solid var(--line);border-radius:6px;padding:8px;margin-bottom:4px}
 .edh{margin-bottom:6px}.edh label{margin:0 0 2px;font-size:12px}
 .edr{display:grid;grid-template-columns:.8fr 1fr 1fr .6fr;gap:5px;align-items:center;margin-bottom:4px;font-size:14px}.edr.hd{font-size:12px;color:var(--mute)}
@@ -113,9 +115,9 @@ th,td{border:1px solid #333;padding:3px 6px;text-align:left;vertical-align:top}t
    <div><label for="start">First room number</label><input id="start" type="number" min="0" value="101"></div>
   </div>
   <label for="prefix">Room label</label><input id="prefix" value="Room">
-  <p class="sub" style="margin-top:8px">Size for new rooms (rows × benches × seats per bench). Whole numbers are total rows; a .5 means split across two sides (6.5 = 6 rows + 7 rows = 13 total). Seats = total rows × benches per row × seats per bench.</p>
+  <p class="sub" style="margin-top:8px">Size for new rooms (total rows × benches × seats per bench). Turn on Two sides to split the total evenly; 13 rows becomes 6 on one side and 7 on the other. Seats = rows × benches per row × seats per bench.</p>
   <div class="row3">
-   <div><label for="rows">Rows</label><input id="rows" type="number" min="1" max="30" step="0.5" value="6"></div>
+   <div><label for="rows">Total rows</label><input id="rows" type="number" min="1" max="30" step="1" value="6"><label class="checkline"><input id="twoSides" type="checkbox"> Two sides</label></div>
    <div><label for="benches">Benches</label><input id="benches" type="number" min="1" max="12" value="4"></div>
    <div><label for="per">Seats/bench</label><input id="per" type="number" min="1" max="3" value="2"></div>
   </div>
@@ -148,15 +150,7 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 const lab=g=>`${esc(g.c)}${g.s?'-'+esc(g.s):''}`;
 const hue=i=>`hsl(${(i*67+110)%360} 55% 86%)`;
 const rng=a=>{a=[...a].sort((x,y)=>x-y);const o=[];let i=0;while(i<a.length){let j=i;while(j+1<a.length&&a[j+1]===a[j]+1)j++;o.push(j>i?a[i]+'-'+a[j]:''+a[i]);i=j+1}return o.join(', ')};
-function rowSetting(v){
- const n=Number(v);
- if(Number.isFinite(n)&&n>1&&n%1===0.5){
-  const side=Math.floor(n);
-  return {r:side*2+1,split:true,display:n};
- }
- const r=clamp(v,1,30);
- return {r,split:false,display:r};
-}
+const rowSetting=v=>{const r=clamp(v,1,30);return {r,display:r}};
 const rowCaps=m=>m.rc?m.rc.slice(0,m.r).map(x=>x.b*x.p):Array.from({length:Math.max(0,m.r)},()=>m.b*m.p);
 const cap=m=>rowCaps(m).reduce((a,b)=>a+b,0);
 const clamp=(v,a,b)=>Math.min(b,Math.max(a,Math.round(+v)||a));
@@ -171,30 +165,34 @@ function info(){
 function newRoom(){
  const last=rooms[rooms.length-1],mt=last&&last.name.match(/(\d+)\s*$/),num=mt?+mt[1]+1:(+$('start').value||0)+rooms.length;
  const rs=rowSetting($('rows').value);
- return {name:`${$('prefix').value.trim()} ${num}`.trim(),r:rs.r,split:rs.split,rowDisplay:rs.display,b:clamp($('benches').value,1,12),p:clamp($('per').value,1,3),aisle:0};
+ return {name:`${$('prefix').value.trim()} ${num}`.trim(),r:rs.r,split:$('twoSides').checked,rowDisplay:rs.display,b:clamp($('benches').value,1,12),p:clamp($('per').value,1,3),aisle:0};
 }
 function setCount(n){n=clamp(n,1,500);while(rooms.length<n)rooms.push(newRoom());rooms.length=n;$('nrooms').value=n;drawRooms()}
-const edHtml=(m,j)=>`<div class="ed" id="ed${j}"><div class="edh"><label for="ai${j}">Aisle after bench no. (0 = none)</label><input id="ai${j}" data-j="${j}" data-f="aisle" type="number" min="0" max="12" value="${m.aisle||0}"></div>
+const edHtml=(m,j)=>`<div class="ed" id="ed${j}"><div class="edh row2"><div><label for="ai${j}">Aisle after bench no. (0 = none)</label><input id="ai${j}" data-j="${j}" data-f="aisle" type="number" min="0" max="12" value="${m.aisle||0}"></div><label class="checkline"><input data-j="${j}" data-f="split" type="checkbox"${m.split?' checked':''}> Two sides</label></div>
  <div class="edr hd"><span>Row</span><span>Benches</span><span>Seats/bench</span><span>Seats</span></div>`+
  m.rc.slice(0,m.r).map((x,i)=>`<div class="edr"><span>Row ${i+1}</span><input data-j="${j}" data-row="${i}" data-f="rb" type="number" min="0" max="12" value="${x.b}" aria-label="Row ${i+1} benches"><input data-j="${j}" data-row="${i}" data-f="rp" type="number" min="0" max="3" value="${x.p}" aria-label="Row ${i+1} seats per bench"><span id="rs${j}_${i}">${x.b*x.p}</span></div>`).join('')+
  `<button type="button" data-rst="${j}">Make all rows equal again</button></div>`;
 function drawRooms(){
  $('rooms').innerHTML=`<div class="rhead"><span>Room</span><span>Rows</span><span>Benches</span><span>Seats/bench</span><span>Seats</span><span></span><span></span></div>`+
  rooms.map((m,i)=>`<div class="rm"><input data-j="${i}" data-f="name" value="${esc(m.name)}" aria-label="Room name">
- <input data-j="${i}" data-f="r" type="number" min="1" max="30" step="0.5" value="${m.rowDisplay??m.r}" aria-label="Rows (a .5 splits rows across two sides; 6.5 means 13 total rows)">
+ <input data-j="${i}" data-f="r" type="number" min="1" max="30" step="1" value="${m.rowDisplay??m.r}" aria-label="Total rows">
  <input data-j="${i}" data-f="b" type="number" min="1" max="12" value="${m.b}" aria-label="Benches per row">
  <input data-j="${i}" data-f="p" type="number" min="1" max="3" value="${m.p}" aria-label="Seats per bench">
  <span class="cp" id="cp${i}">${cap(m)}</span><button type="button" data-ed="${i}" aria-expanded="${!!m.open}" title="Set each row separately">Rows</button><button type="button" data-rm="${i}" aria-label="Remove room">✕</button>${m.open&&m.rc?edHtml(m,i):''}</div>`).join('');
  info();
 }
 function applyRowSetting(t){
- const j=+t.dataset.j,m=rooms[j],n=Number(t.value);
- if(!t.value.trim()||!Number.isFinite(n)||n<1||n>30){
-  t.value=m.rowDisplay??m.r;
-  say('Enter a row value between 1 and 30.',1);
-  return;
+ const j=+t.dataset.j,m=rooms[j];
+ if(t.dataset.f==='split')m.split=t.checked;
+ else{
+  const n=Number(t.value);
+  if(!t.value.trim()||!Number.isInteger(n)||n<1||n>30){
+   t.value=m.rowDisplay??m.r;
+   say('Enter a whole number of rows between 1 and 30.',1);
+   return;
+  }
+  const rs=rowSetting(n);m.r=rs.r;m.rowDisplay=rs.display;
  }
- const rs=rowSetting(n);m.r=rs.r;m.split=rs.split;m.rowDisplay=rs.display;
  if(m.rc){while(m.rc.length<m.r)m.rc.push({b:m.b,p:m.p});m.rc.length=m.r}
  if(m.open){const el=$('ed'+j);if(el)el.outerHTML=edHtml(m,j)}
  const c=$('cp'+j);if(c)c.textContent=cap(m);
@@ -207,7 +205,7 @@ else if(f==='rb'||f==='rp'){const x=m.rc[+t.dataset.row];x[f[1]]=v;const sp=$(`r
 else{m[f]=v;if(m.rc){m.rc.forEach(x=>{x[f]=v});
   if(m.open){const el=$('ed'+j);if(el)el.outerHTML=edHtml(m,j)}}}
 const c=$('cp'+j);if(c)c.textContent=cap(m);info()});
-$('rooms').addEventListener('change',e=>{if(e.target.dataset.f==='r')applyRowSetting(e.target)});
+$('rooms').addEventListener('change',e=>{if(e.target.dataset.f==='r'||e.target.dataset.f==='split')applyRowSetting(e.target)});
 $('rooms').addEventListener('click',e=>{const d=e.target.dataset;
  if(d.rm!==undefined){if(rooms.length>1){rooms.splice(+d.rm,1);$('nrooms').value=rooms.length;drawRooms()}}
  else if(d.ed!==undefined){const m=rooms[+d.ed];m.open=!m.open;if(m.open&&!m.rc)m.rc=Array.from({length:m.r},()=>({b:m.b,p:m.p}));drawRooms()}
