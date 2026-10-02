@@ -70,6 +70,7 @@ th,td{border:1px solid #333;padding:3px 6px;text-align:left;vertical-align:top}t
 .print-bank-row{display:grid;gap:0;margin-bottom:10mm;break-inside:avoid}
 .print-bank-row:last-child{margin-bottom:0}
 .print-seat{min-width:0;min-height:18mm;border:1px solid #999;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-family:"Times New Roman",Times,serif;line-height:1.15;padding:1mm}
+.print-seat.bench-gap{margin-left:2.5mm}
 .print-seat strong{font-size:16pt}
 .print-seat span{font-size:18pt}
 .print-seat.empty{color:transparent}
@@ -313,7 +314,7 @@ function render(){
    rows.forEach(row=>{
     const colCount=Math.max(1,row.cells.length);
     h+=`<div class="print-bank-row" style="grid-template-columns:repeat(${colCount},minmax(0,1fr))">`;
-    row.cells.forEach(c=>h+=c?`<div class="print-seat"><strong>${lab(gs[c.g])}</strong><span>${c.r}</span></div>`:'<div class="print-seat empty">&nbsp;</div>');
+    row.cells.forEach((c,j)=>{const benchGap=j>0&&j%row.p===0?' bench-gap':'';h+=c?`<div class="print-seat${benchGap}"><strong>${lab(gs[c.g])}</strong><span>${c.r}</span></div>`:`<div class="print-seat empty${benchGap}">&nbsp;</div>`});
     h+='</div>';
    });
    h+='</div>';
