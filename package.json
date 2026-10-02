@@ -1,0 +1,13 @@
+{
+  "name": "seat-plan",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "dev": "npm run build && wrangler pages dev dist",
+    "deploy": "npm run build && wrangler pages deploy dist --project-name=seat-plan"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}
