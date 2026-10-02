@@ -60,23 +60,22 @@ thead{display:table-header-group}tr{break-inside:avoid;page-break-inside:avoid}
 th,td{border:1px solid #333;padding:3px 6px;text-align:left;vertical-align:top}th{background:#e8ece9}
 .pb{page-break-before:always;break-before:page}
 .foot{margin-top:18px;display:flex;justify-content:space-between;font-size:12px;gap:12px}
-.print-head{text-align:center;font-family:"Times New Roman",Times,serif;line-height:1.25;margin-bottom:9mm}
+.print-head{text-align:center;font-family:"Times New Roman",Times,serif;line-height:1.25;margin-bottom:3mm;flex:0 0 auto}
 .print-head h3{font-size:19pt;font-weight:700;margin:0}
 .print-head .location{font-size:15pt;margin-top:1mm}
 .print-head .exam{font-size:17pt;font-weight:700;margin-top:2mm}
 .print-head .title{font-size:17pt;font-weight:700;text-decoration:underline;margin-top:2mm}
 .print-head .room{font-size:15pt;font-weight:700;text-align:right;margin-top:2mm}
-.print-room-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:14mm;row-gap:8mm;margin-bottom:15mm}
+.print-room-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:14mm;row-gap:8mm;margin-bottom:3mm}
 .print-room-grid.single{grid-template-columns:1fr}
-.print-bank{min-width:0}
-.print-bank-row{display:grid;gap:0;margin-bottom:10mm;break-inside:avoid}
-.print-bank-row:last-child{margin-bottom:0}
-.print-seat{min-width:0;min-height:18mm;border:1px solid #999;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-family:"Times New Roman",Times,serif;line-height:1.15;padding:1mm}
+.print-bank{min-width:0;display:flex;flex-direction:column;justify-content:space-between;gap:2mm}
+.print-bank-row{display:grid;gap:0;flex:1;min-height:0;break-inside:avoid}
+.print-seat{min-width:0;min-height:0;border:1px solid #999;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-family:"Times New Roman",Times,serif;line-height:1.05;padding:.5mm}
 .print-seat.bench-gap{margin-left:2.5mm}
-.print-seat strong{font-size:16pt}
-.print-seat span{font-size:18pt}
+.print-seat strong{font-size:var(--seat-class-size,16pt)}
+.print-seat span{font-size:var(--seat-roll-size,18pt)}
 .print-seat.empty{color:transparent}
-.print-summary{width:70%;font-family:"Times New Roman",Times,serif;font-size:13pt}
+.print-summary{width:70%;font-family:"Times New Roman",Times,serif;font-size:13pt;flex:0 0 auto;margin-top:auto}
 .print-summary th,.print-summary td{border:1px solid #111;padding:1.7mm 2mm;text-align:center;vertical-align:middle}
 .print-summary th{font-weight:700;background:#fff}
 .print-summary td.rolls{text-align:left}
@@ -84,10 +83,12 @@ th,td{border:1px solid #333;padding:3px 6px;text-align:left;vertical-align:top}t
 @media print{
  body{background:#fff;color:#000}.app{display:block;padding:0;max-width:none}.panel.ctl{display:none}
  .panel.pv{border:0;padding:0;background:none}.preview{overflow:visible}
- .sheet{box-sizing:border-box;border:1px solid #111;margin:0;width:auto!important;min-height:0!important;padding:5mm;page-break-after:always;break-after:page}
+ .sheet{box-sizing:border-box;border:1px solid #111;margin:0;width:auto!important;height:277mm!important;min-height:277mm!important;padding:5mm;display:flex;flex-direction:column;overflow:hidden;page-break-after:always;break-after:page}
  .sheet:last-child{page-break-after:auto;break-after:auto}
  .print-head,.print-room-grid,.print-bank,.print-seat,.print-summary,.print-summary th,.print-summary td{background:#fff!important;color:#000!important;box-shadow:none!important}
- .print-room-grid{column-gap:14mm;row-gap:8mm}
+ .print-room-grid{column-gap:14mm;row-gap:8mm;flex:1;min-height:0}
+ .print-bank-row{margin:0;min-height:0}
+ .print-summary{margin-top:auto}
  .print-seat{border-color:#999}
  *{-webkit-print-color-adjust:economy!important;print-color-adjust:economy!important}
 }
@@ -306,7 +307,9 @@ function render(){
  const stats=rl.map(r=>{const m={};r.rows.forEach(w=>w.cells.forEach(c=>{if(c)(m[c.g]=m[c.g]||[]).push(c.r)}));return m});
  let h='';
  rl.forEach((r,k)=>{
-  h+=`<div class="sheet ${L}">${head(r)}<div class="print-room-grid${r.split?'':' single'}">`;
+  const maxBankRows=r.split?Math.max(Math.floor(r.totalRows/2),Math.ceil(r.totalRows/2)):r.totalRows;
+  const seatFontScale=Math.min(1,Math.max(.45,7/maxBankRows));
+  h+=`<div class="sheet ${L}">${head(r)}<div class="print-room-grid${r.split?'':' single'}" style="--seat-class-size:${(16*seatFontScale).toFixed(1)}pt;--seat-roll-size:${(18*seatFontScale).toFixed(1)}pt">`;
   const drawBank=rows=>{
    h+='<div class="print-bank">';
    rows.forEach(row=>{
