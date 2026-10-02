@@ -128,6 +128,13 @@ th,td{border:1px solid #333;padding:3px 6px;text-align:left;vertical-align:top}t
   </div>
   <div id="info" role="status"></div>
   <div id="rooms"></div>
+  <h2>Saved plans</h2>
+  <p class="sub">Plans are saved in this browser and can be reused on this device.</p>
+  <label for="savedPlans">Saved plans</label><select id="savedPlans"><option value="">No saved plans yet</option></select>
+  <div class="btns">
+   <button id="loadPlan" type="button">Load selected plan</button>
+   <button id="deletePlan" type="button">Delete selected plan</button>
+  </div>
   <h2>Print</h2>
   <div class="row2">
    <div><label for="orient">Paper</label><select id="orient"><option value="portrait">A4 portrait</option><option value="landscape">A4 landscape</option></select></div>
@@ -147,6 +154,7 @@ const $=id=>document.getElementById(id);
 let groups=[{c:'10',s:'A',n:35},{c:'10',s:'B',n:35},{c:'9',s:'A',n:30}];
 let rooms=[];
 let plan=null;
+const SAVED_PLANS_KEY='seat-planner-saved-plans-v1';
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const lab=g=>`${esc(g.c)}${g.s?'-'+esc(g.s):''}`;
 const hue=i=>`hsl(${(i*67+110)%360} 55% 86%)`;
@@ -156,6 +164,82 @@ const rowCaps=m=>m.rc?m.rc.slice(0,m.r).map(x=>x.b*x.p):Array.from({length:Math.
 const cap=m=>rowCaps(m).reduce((a,b)=>a+b,0);
 const clamp=(v,a,b)=>Math.min(b,Math.max(a,Math.round(+v)||a));
 function say(t,err){$('msg').textContent=t;$('msg').className=err?'err':''}
+function readSavedPlans(){
+ try{
+  const raw=localStorage.getItem(SAVED_PLANS_KEY);
+  if(!raw)return [];
+  const saved=JSON.parse(raw);
+  if(!Array.isArray(saved))throw new Error('Saved plans data is not a list.');
+  return saved;
+ }catch(err){
+  say(`Could not read saved plans from this browser: ${err.message}`,1);
+  return null;
+ }
+}
+function refreshSavedPlans(selectedId=''){
+ const saved=readSavedPlans(),select=$('savedPlans');
+ if(!saved){select.innerHTML='<option value="">Saved plans unavailable</option>';return false}
+ saved.sort((a,b)=>b.savedAt-a.savedAt);
+ select.innerHTML=saved.length
+  ?saved.map(item=>`<option value="${esc(item.id)}">${esc(item.name)}</option>`).join('')
+  :'<option value="">No saved plans yet</option>';
+ if(selectedId&&saved.some(item=>item.id===selectedId))select.value=selectedId;
+ $('loadPlan').disabled=!saved.length;
+ $('deletePlan').disabled=!saved.length;
+ return true;
+}
+function saveCurrentPlan(){
+ const saved=readSavedPlans();
+ if(!saved)return false;
+ const school=$('school').value.trim()||'Untitled school';
+ const exam=$('exam').value.trim()||'Untitled exam';
+ const date=$('date').value||'No date';
+ const name=`${school} — ${exam} — ${date}`;
+ const id=JSON.stringify([school,exam,date]);
+ const snapshot={
+  school:$('school').value,location:$('location').value,exam:$('exam').value,date:$('date').value,
+  groups,rooms,nrooms:$('nrooms').value,start:$('start').value,prefix:$('prefix').value,
+  rows:$('rows').value,twoSides:$('twoSides').checked,benches:$('benches').value,per:$('per').value,
+  orient:$('orient').value,mix:$('mix').value
+ };
+ try{
+  const index=saved.findIndex(item=>item.id===id);
+  const record={id,name,savedAt:Date.now(),snapshot:JSON.parse(JSON.stringify(snapshot))};
+  if(index>=0)saved[index]=record;else saved.push(record);
+  localStorage.setItem(SAVED_PLANS_KEY,JSON.stringify(saved));
+ }catch(err){
+  say(`Plan generated, but could not save it in this browser: ${err.message}`,1);
+  return false;
+ }
+ if(!refreshSavedPlans(id))return false;
+ say(`Plan saved as "${name}". Select it under Saved plans to reuse it.`);
+ return true;
+}
+function restoreSavedPlan(){
+ const saved=readSavedPlans();
+ if(!saved)return;
+ const record=saved.find(item=>item.id===$('savedPlans').value);
+ if(!record){say('Select a saved plan to load.',1);return}
+ const s=record.snapshot;
+ if(!s||!Array.isArray(s.groups)||!Array.isArray(s.rooms)){say('This saved plan is incomplete and cannot be loaded.',1);return}
+ groups=s.groups;rooms=s.rooms;
+ $('school').value=s.school||'';$('location').value=s.location||'';$('exam').value=s.exam||'';$('date').value=s.date||'';
+ $('nrooms').value=s.nrooms||rooms.length;$('start').value=s.start||'0';$('prefix').value=s.prefix||'Room';
+ $('rows').value=s.rows||'6';$('twoSides').checked=!!s.twoSides;$('benches').value=s.benches||'4';$('per').value=s.per||'2';
+ $('orient').value=s.orient||'portrait';$('mix').value=s.mix||'mix';
+ drawGroups();drawRooms();generate(false);
+ if(plan)say(`Loaded "${record.name}". Make seating plan to save any changes.`);
+}
+function deleteSavedPlan(){
+ const saved=readSavedPlans();
+ if(!saved)return;
+ const id=$('savedPlans').value,record=saved.find(item=>item.id===id);
+ if(!record){say('Select a saved plan to delete.',1);return}
+ try{localStorage.setItem(SAVED_PLANS_KEY,JSON.stringify(saved.filter(item=>item.id!==id)))}
+ catch(err){say(`Could not delete saved plan: ${err.message}`,1);return}
+ refreshSavedPlans();
+ say(`Deleted saved plan "${record.name}".`);
+}
 const total=()=>groups.reduce((a,g)=>a+(g.c.trim()?(g.rolls?g.rolls.length:Math.max(0,g.n||0)):0),0);
 function info(){
  const T=total(),S=rooms.reduce((a,m)=>a+cap(m),0),d=rowSetting($('rows').value).r*clamp($('benches').value,1,12)*clamp($('per').value,1,3);
@@ -215,6 +299,8 @@ $('nrooms').addEventListener('change',e=>setCount(e.target.value));
 $('applydef').onclick=()=>{const n=newRoom();rooms.forEach(m=>{m.r=n.r;m.split=n.split;m.rowDisplay=n.rowDisplay;m.b=n.b;m.p=n.p;delete m.rc;m.open=false});drawRooms()};
 $('need').onclick=()=>{const d=rowSetting($('rows').value).r*clamp($('benches').value,1,12)*clamp($('per').value,1,3);setCount(Math.max(1,Math.ceil(total()/d)))};
 ['rows','benches','per'].forEach(id=>$(id).addEventListener('input',info));
+$('loadPlan').onclick=restoreSavedPlan;
+$('deletePlan').onclick=deleteSavedPlan;
 
 function drawGroups(){
  $('groups').innerHTML=groups.map((g,i)=>`<div class="grp">
@@ -230,7 +316,7 @@ $('groups').addEventListener('input',e=>{const t=e.target,k=t.dataset.k;if(!k)re
 $('groups').addEventListener('click',e=>{const d=e.target.dataset.del;if(d!==undefined){groups.splice(+d,1);drawGroups()}});
 $('add').onclick=()=>{groups.push({c:'',s:'',n:30});drawGroups()};
 
-function generate(){
+function generate(save=true){
  const gs=groups.filter(g=>g.c.trim()&&(g.rolls?g.rolls.length:g.n>0));
  if(!gs.length){say('Add at least one class with students.',1);return}
  const bad=rooms.find(m=>cap(m)<1);
@@ -297,6 +383,7 @@ function generate(){
  render();
  const unused=rooms.length-rl.length;
  say(`${T} students placed in ${rl.length} room${rl.length>1?'s':''}${unused?` (${unused} left empty)`:''}. Press the button again after any change.`);
+ if(save)saveCurrentPlan();
 }
 function render(){
  if(!plan)return;
@@ -362,7 +449,7 @@ $('gen').onclick=generate;
 $('orient').onchange=render;
 $('print').onclick=()=>{generate();if(plan)window.print()};
 $('date').valueAsDate=new Date();
-drawGroups();setCount(3);generate();
+drawGroups();setCount(3);refreshSavedPlans();generate(false);
 </script>
 </body>
 </html>
