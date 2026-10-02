@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>School Seat Planner</title>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f3f2ee;--panel:#fff;--ink:#1d2b27;--mute:#5d6b66;--line:#d4d8d3;--acc:#24533f;--accfg:#fff;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#141a18;--panel:#1d2623;--ink:#e8eee9;--mute:#9aa8a2;--line:#33403b;--acc:#5fb28f;--accfg:#10201a}}
+:root[data-theme="dark"]{--bg:#141a18;--panel:#1d2623;--ink:#e8eee9;--mute:#9aa8a2;--line:#33403b;--acc:#5fb28f;--accfg:#10201a}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 "Atkinson Hyperlegible",system-ui,Arial,sans-serif}
+.app{display:grid;grid-template-columns:450px 1fr;gap:16px;max-width:1400px;margin:0 auto;padding:16px}
+@media(max-width:900px){.app{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px}
+h1{font-size:22px;margin:0 0 4px}h2{font-size:16px;margin:18px 0 8px}
+p.sub,.sub{margin:0;color:var(--mute);font-size:14px}
+label{display:block;font-size:14px;color:var(--mute);margin:8px 0 2px}
+input,select{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:7px 9px;min-width:0}
+input:focus-visible,select:focus-visible,button:focus-visible{outline:3px solid var(--acc);outline-offset:1px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.grp{display:grid;grid-template-columns:1fr 1fr 1.2fr auto;gap:6px;align-items:end;margin-bottom:6px}
+.grp label{margin:0 0 2px;font-size:12px}
+.rhead,.rm{display:grid;grid-template-columns:1.4fr .7fr .8fr .9fr .6fr auto auto;gap:5px;align-items:center;margin-bottom:5px}
+.ed{grid-column:1/-1;border:1px solid var(--line);border-radius:6px;padding:8px;margin-bottom:4px}
+.edh{margin-bottom:6px}.edh label{margin:0 0 2px;font-size:12px}
+.edr{display:grid;grid-template-columns:.8fr 1fr 1fr .6fr;gap:5px;align-items:center;margin-bottom:4px;font-size:14px}.edr.hd{font-size:12px;color:var(--mute)}
+.ed button{margin-top:4px;font-size:13px;padding:5px 9px}
+.rhead{font-size:12px;color:var(--mute);position:sticky;top:0;background:var(--panel)}
+.rm input{padding:5px 6px}.rm .cp{text-align:center;font-weight:700}
+#rooms{max-height:340px;overflow:auto;padding-right:2px}
+button{font:inherit;cursor:pointer;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--ink);padding:7px 12px}
+button.pri{background:var(--acc);color:var(--accfg);border-color:var(--acc);font-weight:700}
+.btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+#info{margin:8px 0;font-size:14px;font-weight:700}#info.err,#msg.err{color:#b3261e}
+#msg{margin-top:10px;font-size:14px;color:var(--mute)}
+.preview{overflow:auto}
+.sheet{background:#fff;color:#111;margin:0 auto 16px;border:1px solid var(--line);padding:10mm;font-family:"Atkinson Hyperlegible",Arial,sans-serif;width:210mm;min-height:297mm}
+.sheet.land{width:297mm;min-height:210mm}
+.sheet h3{margin:0;font-size:20px;text-align:center}
+.sheet h4{margin:14px 0 4px;font-size:14px}
+.meta{display:flex;justify-content:space-between;font-size:13px;border-bottom:2px solid #111;padding:6px 0;margin-bottom:8px}
+.board{background:#24533f;color:#fff;text-align:center;font-weight:700;font-size:12px;padding:4px;border-radius:3px;width:50%;margin:0 auto 10px}
+.grid{display:grid;gap:4px}
+.cell{border:1.2px solid #111;border-radius:3px;text-align:center;padding:2px 1px;min-height:44px;display:flex;flex-direction:column;justify-content:center;line-height:1.1;overflow:hidden}
+.cell b{font-size:var(--fs,16px)}.cell small{font-size:10px}.cell i{font-style:normal;font-size:8px;color:#555}
+.cell.empty{border-style:dashed;border-color:#aaa}
+.gap{margin-left:10px}.cell.aisle{margin-left:28px}
+.srow{display:flex;gap:4px;justify-content:center;margin-bottom:4px}.srow .cell{width:var(--w);flex:none}
+.sides{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8mm}.side{min-width:0}.side-title{text-align:center;font-weight:700;font-size:11px;margin:0 0 5px}
+.legend{display:flex;gap:6px 14px;flex-wrap:wrap;margin-top:12px;font-size:12px}
+.legend span{display:inline-flex;gap:5px;align-items:flex-start}.legend em{width:12px;height:12px;border:1px solid #111;display:inline-block;flex:none;margin-top:2px}
+table{width:100%;border-collapse:collapse;font-size:12px;margin-top:4px}
+thead{display:table-header-group}tr{break-inside:avoid;page-break-inside:avoid}
+th,td{border:1px solid #333;padding:3px 6px;text-align:left;vertical-align:top}th{background:#e8ece9}
+.pb{page-break-before:always;break-before:page}
+.foot{margin-top:18px;display:flex;justify-content:space-between;font-size:12px;gap:12px}
+.print-head{text-align:center;font-family:"Times New Roman",Times,serif;line-height:1.25;margin-bottom:9mm}
+.print-head h3{font-size:19pt;font-weight:700;margin:0}
+.print-head .location{font-size:15pt;margin-top:1mm}
+.print-head .exam{font-size:17pt;font-weight:700;margin-top:2mm}
+.print-head .title{font-size:17pt;font-weight:700;text-decoration:underline;margin-top:2mm}
+.print-head .room{font-size:15pt;font-weight:700;text-align:right;margin-top:2mm}
+.print-room-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:14mm;row-gap:8mm;margin-bottom:15mm}
+.print-room-grid.single{grid-template-columns:1fr}
+.print-bank{min-width:0}
+.print-bank-row{display:grid;gap:0;margin-bottom:10mm;break-inside:avoid}
+.print-bank-row:last-child{margin-bottom:0}
+.print-seat{min-width:0;min-height:18mm;border:1px solid #999;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-family:"Times New Roman",Times,serif;line-height:1.15;padding:1mm}
+.print-seat strong{font-size:16pt}
+.print-seat span{font-size:18pt}
+.print-seat.empty{color:transparent}
+.print-summary{width:70%;font-family:"Times New Roman",Times,serif;font-size:13pt}
+.print-summary th,.print-summary td{border:1px solid #111;padding:1.7mm 2mm;text-align:center;vertical-align:middle}
+.print-summary th{font-weight:700;background:#fff}
+.print-summary td.rolls{text-align:left}
+.print-summary tfoot td{font-weight:700}
+@media print{
+ body{background:#fff;color:#000}.app{display:block;padding:0;max-width:none}.panel.ctl{display:none}
+ .panel.pv{border:0;padding:0;background:none}.preview{overflow:visible}
+ .sheet{box-sizing:border-box;border:1px solid #111;margin:0;width:auto!important;min-height:0!important;padding:5mm;page-break-after:always;break-after:page}
+ .sheet:last-child{page-break-after:auto;break-after:auto}
+ .print-head,.print-room-grid,.print-bank,.print-seat,.print-summary,.print-summary th,.print-summary td{background:#fff!important;color:#000!important;box-shadow:none!important}
+ .print-room-grid{column-gap:14mm;row-gap:8mm}
+ .print-seat{border-color:#999}
+ *{-webkit-print-color-adjust:economy!important;print-color-adjust:economy!important}
+}
+</style>
+<style id="pg">@page{size:A4 portrait;margin:10mm}</style>
+</head>
+<body>
+<div class="app">
+ <div class="panel ctl">
+  <h1>Seat Planner</h1>
+  <p class="sub">Enter classes and rooms. Every room can be edited. Students are shared across rooms by room capacity.</p>
+  <h2>School and exam</h2>
+  <label for="school">School name</label><input id="school" value="Your School Name">
+   <label for="location">School location (optional)</label><input id="location" value="">
+  <div class="row2"><div><label for="exam">Exam</label><input id="exam" value="Terminal Examination"></div>
+  <div><label for="date">Date</label><input id="date" type="date"></div></div>
+  <h2>Classes</h2>
+  <div id="groups"></div>
+  <button id="add" type="button">Add class</button>
+  <label for="file">Or import Excel / CSV (columns: Class, Section, Roll, Name optional)</label>
+  <input id="file" type="file" accept=".xlsx,.xls,.csv">
+  <h2>Rooms</h2>
+  <div class="row2">
+   <div><label for="nrooms">Number of rooms</label><input id="nrooms" type="number" min="1" max="500" value="3"></div>
+   <div><label for="start">First room number</label><input id="start" type="number" min="0" value="101"></div>
+  </div>
+  <label for="prefix">Room label</label><input id="prefix" value="Room">
+  <p class="sub" style="margin-top:8px">Size for new rooms (rows × benches × seats per bench). Whole numbers are total rows; a .5 means split across two sides (6.5 = 6 rows + 7 rows = 13 total). Seats = total rows × benches per row × seats per bench.</p>
+  <div class="row3">
+   <div><label for="rows">Rows</label><input id="rows" type="number" min="1" max="30" step="0.5" value="6"></div>
+   <div><label for="benches">Benches</label><input id="benches" type="number" min="1" max="12" value="4"></div>
+   <div><label for="per">Seats/bench</label><input id="per" type="number" min="1" max="3" value="2"></div>
+  </div>
+  <div class="btns">
+   <button id="applydef" type="button">Apply this size to all rooms</button>
+   <button id="need" type="button">Set rooms needed</button>
+  </div>
+  <div id="info" role="status"></div>
+  <div id="rooms"></div>
+  <h2>Print</h2>
+  <div class="row2">
+   <div><label for="orient">Paper</label><select id="orient"><option value="portrait">A4 portrait</option><option value="landscape">A4 landscape</option></select></div>
+   <div><label for="mix">Arrangement</label><select id="mix"><option value="mix">Mix classes (pictured 4-class pattern)</option><option value="seq">In roll order</option></select></div>
+  </div>
+  <div class="btns">
+   <button class="pri" id="gen" type="button">Make seating plan</button>
+   <button id="print" type="button">Print / Save PDF</button>
+  </div>
+  <div id="msg" role="status"></div>
+ </div>
+ <div class="panel pv"><div class="preview" id="out"><p class="sub">Your seating plan will appear here.</p></div></div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+let groups=[{c:'10',s:'A',n:35},{c:'10',s:'B',n:35},{c:'9',s:'A',n:30}];
+let rooms=[];
+let plan=null;
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const lab=g=>`${esc(g.c)}${g.s?'-'+esc(g.s):''}`;
+const hue=i=>`hsl(${(i*67+110)%360} 55% 86%)`;
+const rng=a=>{a=[...a].sort((x,y)=>x-y);const o=[];let i=0;while(i<a.length){let j=i;while(j+1<a.length&&a[j+1]===a[j]+1)j++;o.push(j>i?a[i]+'-'+a[j]:''+a[i]);i=j+1}return o.join(', ')};
+function rowSetting(v){
+ const n=Number(v);
+ if(Number.isFinite(n)&&n>1&&n%1===0.5){
+  const side=Math.floor(n);
+  return {r:side*2+1,split:true,display:n};
+ }
+ const r=clamp(v,1,30);
+ return {r,split:false,display:r};
+}
+const rowCaps=m=>m.rc?m.rc.slice(0,m.r).map(x=>x.b*x.p):Array.from({length:Math.max(0,m.r)},()=>m.b*m.p);
+const cap=m=>rowCaps(m).reduce((a,b)=>a+b,0);
+const clamp=(v,a,b)=>Math.min(b,Math.max(a,Math.round(+v)||a));
+function say(t,err){$('msg').textContent=t;$('msg').className=err?'err':''}
+const total=()=>groups.reduce((a,g)=>a+(g.c.trim()?(g.rolls?g.rolls.length:Math.max(0,g.n||0)):0),0);
+function info(){
+ const T=total(),S=rooms.reduce((a,m)=>a+cap(m),0),d=rowSetting($('rows').value).r*clamp($('benches').value,1,12)*clamp($('per').value,1,3);
+ const el=$('info');
+ el.className=S<T?'err':'';
+ el.textContent=`${T} students | ${rooms.length} rooms, ${S} seats | `+(S>=T?'enough seats':`short by ${T-S} seats`)+` | ${Math.ceil(T/d)} rooms needed at the new-room size`;
+}
+function newRoom(){
+ const last=rooms[rooms.length-1],mt=last&&last.name.match(/(\d+)\s*$/),num=mt?+mt[1]+1:(+$('start').value||0)+rooms.length;
+ const rs=rowSetting($('rows').value);
+ return {name:`${$('prefix').value.trim()} ${num}`.trim(),r:rs.r,split:rs.split,rowDisplay:rs.display,b:clamp($('benches').value,1,12),p:clamp($('per').value,1,3),aisle:0};
+}
+function setCount(n){n=clamp(n,1,500);while(rooms.length<n)rooms.push(newRoom());rooms.length=n;$('nrooms').value=n;drawRooms()}
+const edHtml=(m,j)=>`<div class="ed" id="ed${j}"><div class="edh"><label for="ai${j}">Aisle after bench no. (0 = none)</label><input id="ai${j}" data-j="${j}" data-f="aisle" type="number" min="0" max="12" value="${m.aisle||0}"></div>
+ <div class="edr hd"><span>Row</span><span>Benches</span><span>Seats/bench</span><span>Seats</span></div>`+
+ m.rc.slice(0,m.r).map((x,i)=>`<div class="edr"><span>Row ${i+1}</span><input data-j="${j}" data-row="${i}" data-f="rb" type="number" min="0" max="12" value="${x.b}" aria-label="Row ${i+1} benches"><input data-j="${j}" data-row="${i}" data-f="rp" type="number" min="0" max="3" value="${x.p}" aria-label="Row ${i+1} seats per bench"><span id="rs${j}_${i}">${x.b*x.p}</span></div>`).join('')+
+ `<button type="button" data-rst="${j}">Make all rows equal again</button></div>`;
+function drawRooms(){
+ $('rooms').innerHTML=`<div class="rhead"><span>Room</span><span>Rows</span><span>Benches</span><span>Seats/bench</span><span>Seats</span><span></span><span></span></div>`+
+ rooms.map((m,i)=>`<div class="rm"><input data-j="${i}" data-f="name" value="${esc(m.name)}" aria-label="Room name">
+ <input data-j="${i}" data-f="r" type="number" min="1" max="30" step="0.5" value="${m.rowDisplay??m.r}" aria-label="Rows (a .5 splits rows across two sides; 6.5 means 13 total rows)">
+ <input data-j="${i}" data-f="b" type="number" min="1" max="12" value="${m.b}" aria-label="Benches per row">
+ <input data-j="${i}" data-f="p" type="number" min="1" max="3" value="${m.p}" aria-label="Seats per bench">
+ <span class="cp" id="cp${i}">${cap(m)}</span><button type="button" data-ed="${i}" aria-expanded="${!!m.open}" title="Set each row separately">Rows</button><button type="button" data-rm="${i}" aria-label="Remove room">✕</button>${m.open&&m.rc?edHtml(m,i):''}</div>`).join('');
+ info();
+}
+function applyRowSetting(t){
+ const j=+t.dataset.j,m=rooms[j],n=Number(t.value);
+ if(!t.value.trim()||!Number.isFinite(n)||n<1||n>30){
+  t.value=m.rowDisplay??m.r;
+  say('Enter a row value between 1 and 30.',1);
+  return;
+ }
+ const rs=rowSetting(n);m.r=rs.r;m.split=rs.split;m.rowDisplay=rs.display;
+ if(m.rc){while(m.rc.length<m.r)m.rc.push({b:m.b,p:m.p});m.rc.length=m.r}
+ if(m.open){const el=$('ed'+j);if(el)el.outerHTML=edHtml(m,j)}
+ const c=$('cp'+j);if(c)c.textContent=cap(m);
+ info();
+}
+$('rooms').addEventListener('input',e=>{const t=e.target,f=t.dataset.f;if(!f||f==='r')return;const j=+t.dataset.j,m=rooms[j],v=Math.max(0,Math.round(+t.value)||0);
+if(f==='name')m.name=t.value;
+else if(f==='aisle')m.aisle=v;
+else if(f==='rb'||f==='rp'){const x=m.rc[+t.dataset.row];x[f[1]]=v;const sp=$(`rs${j}_${t.dataset.row}`);if(sp)sp.textContent=x.b*x.p}
+else{m[f]=v;if(m.rc){m.rc.forEach(x=>{x[f]=v});
+  if(m.open){const el=$('ed'+j);if(el)el.outerHTML=edHtml(m,j)}}}
+const c=$('cp'+j);if(c)c.textContent=cap(m);info()});
+$('rooms').addEventListener('change',e=>{if(e.target.dataset.f==='r')applyRowSetting(e.target)});
+$('rooms').addEventListener('click',e=>{const d=e.target.dataset;
+ if(d.rm!==undefined){if(rooms.length>1){rooms.splice(+d.rm,1);$('nrooms').value=rooms.length;drawRooms()}}
+ else if(d.ed!==undefined){const m=rooms[+d.ed];m.open=!m.open;if(m.open&&!m.rc)m.rc=Array.from({length:m.r},()=>({b:m.b,p:m.p}));drawRooms()}
+ else if(d.rst!==undefined){const m=rooms[+d.rst];delete m.rc;m.open=false;drawRooms()}});
+$('nrooms').addEventListener('change',e=>setCount(e.target.value));
+$('applydef').onclick=()=>{const n=newRoom();rooms.forEach(m=>{m.r=n.r;m.split=n.split;m.rowDisplay=n.rowDisplay;m.b=n.b;m.p=n.p;delete m.rc;m.open=false});drawRooms()};
+$('need').onclick=()=>{const d=rowSetting($('rows').value).r*clamp($('benches').value,1,12)*clamp($('per').value,1,3);setCount(Math.max(1,Math.ceil(total()/d)))};
+['rows','benches','per'].forEach(id=>$(id).addEventListener('input',info));
+
+function drawGroups(){
+ $('groups').innerHTML=groups.map((g,i)=>`<div class="grp">
+ <div><label>Class</label><input data-i="${i}" data-k="c" value="${esc(g.c)}"></div>
+ <div><label>Section</label><input data-i="${i}" data-k="s" value="${esc(g.s)}"></div>
+ <div><label>Students</label><input data-i="${i}" data-k="n" type="number" min="1" value="${g.rolls?g.rolls.length:g.n}"></div>
+ <button type="button" data-del="${i}" aria-label="Remove class">✕</button>
+ ${g.rolls?`<div class="sub" id="n${i}" style="grid-column:1/-1;font-size:12px">Roll numbers come from the imported file</div>`:''}</div>`).join('');
+ info();
+}
+$('groups').addEventListener('input',e=>{const t=e.target,k=t.dataset.k;if(!k)return;const g=groups[t.dataset.i];
+ if(k==='n'){delete g.rolls;delete g.names;const n=$('n'+t.dataset.i);if(n)n.remove();g.n=+t.value}else g[k]=t.value;info()});
+$('groups').addEventListener('click',e=>{const d=e.target.dataset.del;if(d!==undefined){groups.splice(+d,1);drawGroups()}});
+$('add').onclick=()=>{groups.push({c:'',s:'',n:30});drawGroups()};
+
+function generate(){
+ const gs=groups.filter(g=>g.c.trim()&&(g.rolls?g.rolls.length:g.n>0));
+ if(!gs.length){say('Add at least one class with students.',1);return}
+ const bad=rooms.find(m=>cap(m)<1);
+ if(bad){say(`Room "${bad.name||'unnamed'}" needs at least 1 row, 1 bench and 1 seat per bench. Fix or remove it.`,1);return}
+ const q=gs.map((g,i)=>({i,rolls:g.rolls?g.rolls.slice():Array.from({length:g.n},(_,k)=>k+1)}));
+ const T=q.reduce((a,x)=>a+x.rolls.length,0),caps=rooms.map(cap),S=caps.reduce((a,b)=>a+b,0);
+ if(T>S){say(`${T} students but only ${S} seats. Add rooms or make rooms bigger (short by ${T-S} seats).`,1);return}
+ // share students across rooms in proportion to capacity
+ const exact=caps.map(c=>T*c/S),cnt=exact.map(Math.floor);
+ let rem=T-cnt.reduce((a,b)=>a+b,0);
+ exact.map((x,i)=>[x-Math.floor(x),i]).sort((a,b)=>b[0]-a[0]).forEach(([,i])=>{if(rem>0&&cnt[i]<caps[i]){cnt[i]++;rem--}});
+ const mix=$('mix').value==='mix',rl=[];
+ rooms.forEach((m,k)=>{
+  if(!cnt[k])return;
+  const rows=[];let left=cnt[k];
+  const caps=rowCaps(m);
+  const classOrder=[...new Map(gs.map(g=>[g.c.trim().toLowerCase(),g.c])).values()];
+  const chooseClass=preferred=>{
+   const available=q.filter(x=>x.rolls.length);
+   if(!available.length)return null;
+   const sameClass=(a,b)=>gs[a.i].c.trim().toLowerCase()===b.trim().toLowerCase();
+   const availableFor=cls=>available.filter(x=>sameClass(x,cls));
+   for(let offset=0;offset<classOrder.length;offset++){
+    const cls=classOrder[(preferred+offset)%classOrder.length],pool=availableFor(cls);
+    if(pool.length)return pool.reduce((a,b)=>b.rolls.length>a.rolls.length?b:a);
+   }
+   return null;
+  };
+  const placeRow=(c,i,prev,side,sideRow)=>{
+   if((left<=0&&!m.split)||c<1)return null;
+   const cells=Array(c).fill(null);
+   for(let j=0;j<c&&left>0;j++){
+    const lf=j?cells[j-1]:null,up=prev?prev.cells[j]||null:null,pool=q.filter(x=>x.rolls.length);
+    let pick;
+    if(mix&&m.split&&classOrder.length===4){
+     const order=side===1||((sideRow-1)%4===3)?[2,3,0,1]:[0,1,2,3];
+     pick=chooseClass(order[j%order.length]);
+    }else if(mix){
+     const sameClass=(cell,candidate)=>gs[cell.g].c.trim().toLowerCase()===gs[candidate.i].c.trim().toLowerCase();
+     const down=up?pool.filter(x=>sameClass(up,x)):[];
+     const side=pool.filter(x=>!(lf&&sameClass(lf,x)));
+     const use=down.length?down:side.length?side:pool;
+     pick=use.reduce((a,b)=>b.rolls.length>a.rolls.length?b:a);
+    }
+    else pick=pool[0];
+    if(!pick)break;
+    const roll=pick.rolls.shift();cells[j]={g:pick.i,r:roll,n:(gs[pick.i].names||{})[roll]||''};left--;
+   }
+   const row={cells,p:m.rc?m.rc[i].p:m.p,b:m.rc?m.rc[i].b:m.b,idx:i+1,side,sideRow};rows.push(row);return row;
+  };
+  if(m.split){
+   const leftCount=Math.floor(caps.length/2),prev=[null,null];
+   for(let side=0;side<2;side++){
+    const start=side===0?0:leftCount,end=side===0?leftCount:caps.length;
+    for(let i=start;i<end;i++)prev[side]=placeRow(caps[i],i,prev[side],side,i-start+1)||prev[side];
+   }
+  }else{
+   let prev=null;
+   caps.forEach((c,i)=>{prev=placeRow(c,i,prev,null,null)||prev});
+  }
+  rl.push({name:m.name||`Room ${k+1}`,rows,cnt:cnt[k],aisle:m.aisle||0,split:!!m.split,totalRows:m.r,capacity:cap(m)});
+ });
+ plan={gs,rl,T};
+ render();
+ const unused=rooms.length-rl.length;
+ say(`${T} students placed in ${rl.length} room${rl.length>1?'s':''}${unused?` (${unused} left empty)`:''}. Press the button again after any change.`);
+}
+function render(){
+ if(!plan)return;
+ const {gs,rl,T}=plan,land=$('orient').value==='landscape',L=land?'land':'';
+ $('pg').textContent=`@page{size:A4 ${land?'landscape':'portrait'};margin:10mm}`;
+ const dt=$('date').value?new Date($('date').value).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}):'';
+ const head=r=>`<header class="print-head"><h3>${esc($('school').value)}</h3>${$('location').value.trim()?`<div class="location">${esc($('location').value)}</div>`:''}<div class="exam">${esc($('exam').value)}${dt?` - ${dt}`:''}</div><div class="title">Seat Planning</div><div class="room">Room no.: ${esc(r.name)}</div></header>`;
+ const stats=rl.map(r=>{const m={};r.rows.forEach(w=>w.cells.forEach(c=>{if(c)(m[c.g]=m[c.g]||[]).push(c.r)}));return m});
+ let h='';
+ rl.forEach((r,k)=>{
+  h+=`<div class="sheet ${L}">${head(r)}<div class="print-room-grid${r.split?'':' single'}">`;
+  const drawBank=rows=>{
+   h+='<div class="print-bank">';
+   rows.forEach(row=>{
+    const colCount=Math.max(1,row.cells.length);
+    h+=`<div class="print-bank-row" style="grid-template-columns:repeat(${colCount},minmax(0,1fr))">`;
+    row.cells.forEach(c=>h+=c?`<div class="print-seat"><strong>${lab(gs[c.g])}</strong><span>${c.r}</span></div>`:'<div class="print-seat empty">&nbsp;</div>');
+    h+='</div>';
+   });
+   h+='</div>';
+  };
+  if(r.split){
+   const sideA=r.rows.filter(row=>row.side===0),sideB=r.rows.filter(row=>row.side===1);
+   drawBank(sideA);drawBank(sideB);
+  }else drawBank(r.rows);
+  const ids=Object.keys(stats[k]).map(Number).sort((a,b)=>a-b);
+  h+=`</div><table class="print-summary"><thead><tr><th>Class</th><th>Roll no.</th><th>Total</th></tr></thead><tbody>`;
+  ids.forEach(gi=>h+=`<tr><td>${lab(gs[gi])}</td><td class="rolls">${[...stats[k][gi]].sort((a,b)=>a-b).join(',')}</td><td>${stats[k][gi].length}</td></tr>`);
+  h+=`</tbody><tfoot><tr><td colspan="2">Total students</td><td>${r.cnt}</td></tr></tfoot></table></div>`;
+ });
+ $('out').innerHTML=h;
+}
+const norm=k=>String(k).toLowerCase().replace(/[^a-z]/g,'');
+const pickv=(r,names)=>{for(const k in r)if(names.includes(norm(k)))return r[k];return ''};
+$('file').onchange=e=>{
+ const f=e.target.files[0];if(!f)return;
+ if(typeof XLSX==='undefined'){say('Excel reader could not load. Check your connection and reload.',1);return}
+ const rd=new FileReader();
+ rd.onload=ev=>{
+  try{
+   const wb=XLSX.read(ev.target.result,{type:'array'});
+   const rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:''});
+   const m=new Map();let bad=0;
+   rows.forEach(r=>{
+    const c=String(pickv(r,['class','grade','std','standard'])).trim(),sec=String(pickv(r,['section','sec'])).trim(),
+     roll=parseInt(pickv(r,['roll','rollno','rollnumber','rollnum']),10),nm=String(pickv(r,['name','studentname'])).trim();
+    if(!c||!roll){bad++;return}
+    const k=c+'|'+sec;if(!m.has(k))m.set(k,{c,s:sec,rolls:[],names:{}});
+    const g=m.get(k);if(!g.rolls.includes(roll))g.rolls.push(roll);if(nm)g.names[roll]=nm;
+   });
+   if(!m.size){say('No students found. First sheet needs columns named Class, Section and Roll (Name is optional).',1);return}
+   groups=[...m.values()].map(g=>{g.rolls.sort((a,b)=>a-b);g.n=g.rolls.length;return g})
+    .sort((a,b)=>a.c.localeCompare(b.c,undefined,{numeric:true})||a.s.localeCompare(b.s));
+   drawGroups();generate();
+   if(bad)say($('msg').textContent+` ${bad} row(s) skipped (missing class or roll).`);
+  }catch(err){say('Could not read this file. Use .xlsx, .xls or .csv.',1)}
+ };
+ rd.readAsArrayBuffer(f);
+};
+$('gen').onclick=generate;
+$('orient').onchange=render;
+$('print').onclick=()=>{generate();if(plan)window.print()};
+$('date').valueAsDate=new Date();
+drawGroups();setCount(3);generate();
+</script>
+</body>
+</html>
