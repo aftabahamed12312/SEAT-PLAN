@@ -178,7 +178,7 @@ th,td{border:1px solid #333;padding:3px 6px;text-align:left;vertical-align:top}t
   <div class="row2"><div><label for="exam">Exam</label><input id="exam" value="First Assessment Test -2083"></div>
   <div><label for="date">Date</label><input id="date" type="date"></div></div>
   <h2>Classes</h2>
-  <p class="sub">Seat plans are generated separately: Primary (Classes 2–5) and Secondary (Classes 6–10). Configured rooms are automatically divided by student and room capacity.</p>
+  <p class="sub">Seat plans are generated separately: Primary (Classes 1–5) and Secondary (Classes 6–10). Configured rooms are automatically divided by student and room capacity.</p>
   <div id="groups"></div>
   <div class="btns"><button id="add" type="button">Add class</button><button id="loadReferenceClasses" type="button">Load reference classes (2–10)</button></div>
   <p class="sub">Loading the reference classes replaces the current class and section list.</p>
@@ -418,11 +418,11 @@ function generate(){
  const primary=[],secondary=[],unassigned=[];
  gs.forEach(g=>{
   const match=String(g.c).match(/\d+/),classNumber=match?Number(match[0]):NaN;
-  if(classNumber>=2&&classNumber<=5)primary.push(g);
+  if(classNumber>=1&&classNumber<=5)primary.push(g);
   else if(classNumber>=6&&classNumber<=10)secondary.push(g);
   else unassigned.push(g);
  });
- if(unassigned.length)return fail(`Class "${unassigned[0].c}" is outside Primary (2–5) and Secondary (6–10). Rename it to a class number from 2 to 10 before generating these plans.`);
+ if(unassigned.length)return fail(`Class "${unassigned[0].c}" is outside Primary (1–5) and Secondary (6–10). Rename it to a class number from 1 to 10 before generating these plans.`);
  if(!primary.length&&!secondary.length)return fail('Add students from Classes 2–10 to generate Primary and Secondary plans.');
  const classTotals=[primary,secondary].map(list=>list.reduce((sum,g)=>sum+(g.rolls?g.rolls.length:g.n),0));
  const [primaryTotal,secondaryTotal]=classTotals,totalStudents=primaryTotal+secondaryTotal;
@@ -559,7 +559,7 @@ function snapshotPlan(){
  return {id:`p-${slug}-${day}-${hash(topic+'|'+day)}`,topic,regDate:day,savedAt:new Date().toISOString(),
   students:total(),rooms:plan.reduce((sum,x)=>sum+x.rl.length,0)||rooms.length,
   levels:plan.map(x=>({name:x.level,classes:[...new Set(x.gs.map(g=>`${g.c}${g.s?` ${g.s}`:''}`))],students:x.T,rooms:x.rl.map(r=>({name:r.name,students:r.cnt}))})),
-  referenceIndex:{capacityPerBench:3,primaryClasses:[2,3,4,5],secondaryClasses:[6,7,8,9,10],tables:referenceTables},
+  referenceIndex:{capacityPerBench:3,primaryClasses:[1,2,3,4,5],secondaryClasses:[6,7,8,9,10],tables:referenceTables},
   st,seed,classes:JSON.parse(JSON.stringify(classes)),roomList:JSON.parse(JSON.stringify(rooms))};
 }
 async function savePlan(){
