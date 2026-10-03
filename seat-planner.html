@@ -59,6 +59,7 @@ details.sv{margin:10px 0;border:1px solid var(--line);border-radius:8px;padding:
 .sheet{font-family:"Times New Roman",Times,serif}
 .hd{text-align:center;line-height:1.4}.hd div{font-size:18px}.hd .sn{font-size:23px;font-weight:700}.hd .ex,.hd .sp{font-size:20px;font-weight:700}.hd .sp{text-decoration:underline}
 .rn{display:flex;justify-content:space-between;font-size:18px;margin:6px 0 16px;min-height:22px}
+.seat-layout{display:flex;flex-direction:column;justify-content:space-between}
 .srow{display:flex;justify-content:center;margin-bottom:16px}
 .sc{width:var(--w);flex:none;border:1px solid #999;text-align:center;font-size:var(--fs)}.sc+.sc{border-left:0}
 .sc .t{font-weight:700;border-bottom:1px solid #999;padding:2px 0}.sc .v{padding:4px 0}.sc .nm{font-size:10px;padding-bottom:2px;line-height:1}
@@ -76,6 +77,16 @@ th,td{border:1px solid #333;padding:3px 6px;text-align:left;vertical-align:top}t
  body{background:#fff}.app{display:block;padding:0;max-width:none}.panel.ctl{display:none}
  .panel.pv{border:0;padding:0;background:none}.preview{overflow:visible}
  .sheet{border:0;margin:0;width:auto!important;min-height:0!important;padding:0}
+ .sheet.pb{box-sizing:border-box;height:277mm!important;min-height:277mm!important;display:flex;flex-direction:column;overflow:hidden;page-break-before:always;page-break-after:always;break-before:page;break-after:page}
+ .sheet.pb.land{height:190mm!important;min-height:190mm!important}
+ .sheet.pb:last-child{page-break-after:auto;break-after:auto}
+ .sheet.pb>.seat-layout{flex:1;min-height:0;justify-content:space-between}
+ .sheet.pb .srow{flex:1;min-height:0;margin:0;padding-bottom:1mm}
+ .sheet.pb .sc{min-height:0;display:flex;flex-direction:column;justify-content:center;overflow:hidden}
+ .sheet.pb .sc .t{padding:0;border-bottom-width:.5px}
+ .sheet.pb .sc .v{padding:0}
+ .sheet.pb .st{flex:none;margin-top:2mm;font-size:11px}
+ .sheet.pb .st th,.sheet.pb .st td{padding:1px 4px}
  .sheet.first{page-break-before:avoid}
  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
@@ -334,7 +345,8 @@ function render(){
  h+=`</table></div>`;
  rl.forEach((r,k)=>{
   const maxS=Math.max(...r.rows.map(x=>x.cells.length)),colw=Math.min(30,((land?297:210)-20)/(maxS+(r.rows.some(w=>w.L>0&&w.R>0)?0.6:0))-0.5),fs=Math.max(13,Math.min(22,colw*0.5));
-  h+=`<div class="sheet pb ${L}">${head('Seat Planning',`Room no.: ${esc(rno(r.name))}`)}<div style="--fs:${fs}px;--w:${colw.toFixed(1)}mm">`;
+  const rowFs=Math.max(8,Math.min(fs,260/r.rows.length));
+  h+=`<div class="sheet pb ${L}">${head('Seat Planning',`Room no.: ${esc(rno(r.name))}`)}<div class="seat-layout" style="--fs:${rowFs.toFixed(1)}px;--w:${colw.toFixed(1)}mm">`;
   r.rows.forEach(row=>{h+=`<div class="srow">`;
    row.cells.forEach((c,j)=>{const gp=row.L>0&&row.R>0&&j===row.L?' aisle':'';
     h+=c?`<div class="sc${gp}"><div class="t">${lab(gs[c.g])}</div><div class="v">${c.r}</div>${c.n?`<div class="nm">${esc(c.n.slice(0,16))}</div>`:''}</div>`
