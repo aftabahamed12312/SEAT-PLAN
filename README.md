@@ -4,6 +4,12 @@ Browser-based school seating planner. The source application is `seat-planner.ht
 
 Production site: <https://seat-plan-490.pages.dev/>
 
+The planner starts with the indexed class totals and all 25 reference rooms at
+4 students per bench. The ready-to-print default plan is
+`reference-seat-planning-25-rooms-capacity-4.pdf`; it is also available from the
+planner and copied into the Pages deployment. The A4 landscape PDF includes a
+Primary and Secondary summary plus one seating chart for each room.
+
 ## Develop locally
 
 Install dependencies and build the static site:

@@ -107,7 +107,7 @@ th,td{border:1px solid #333;padding:3px 6px;text-align:left;vertical-align:top}t
 <div class="app">
  <div class="panel ctl">
   <h1>Seat Planner</h1>
-  <p class="sub">Enter classes and rooms. Every room can be edited. Students are shared across rooms by room capacity.</p>
+  <p class="sub">Starts with the indexed classes and all 25 reference rooms at 4 students per bench. Edit the data as needed before generating the plans.</p>
   <details class="sv" id="svd"><summary id="svs">Saved plans</summary><div id="saved"></div></details>
   <details class="school-index">
    <summary>School seating index (reference data)</summary>
@@ -115,36 +115,36 @@ th,td{border:1px solid #333;padding:3px 6px;text-align:left;vertical-align:top}t
     <div>
      <h3>Class totals and seating capacity</h3>
      <table><thead><tr><th>Class</th><th>Students</th><th>Benches</th><th>Capacity</th></tr></thead><tbody>
-      <tr><td>2R</td><td>33</td><td>9</td><td>27</td></tr>
-      <tr><td>2L</td><td>30</td><td>9</td><td>27</td></tr>
-      <tr><td>2T</td><td>31</td><td>8</td><td>24</td></tr>
-      <tr><td>2M</td><td>30</td><td>8</td><td>24</td></tr>
-      <tr><td>3R</td><td>26</td><td>8</td><td>24</td></tr>
-      <tr><td>3L</td><td>28</td><td>8</td><td>24</td></tr>
-      <tr><td>3M</td><td>24</td><td>8</td><td>24</td></tr>
-      <tr><td>3T</td><td>27</td><td>8</td><td>24</td></tr>
-      <tr><td>4R</td><td>36</td><td>10</td><td>30</td></tr>
-      <tr><td>4L</td><td>35</td><td>11</td><td>33</td></tr>
-      <tr><td>4M</td><td>38</td><td>11</td><td>33</td></tr>
-      <tr><td>5R</td><td>32</td><td>11</td><td>33</td></tr>
-      <tr><td>5L</td><td>32</td><td>11</td><td>33</td></tr>
-      <tr><td>5M</td><td>33</td><td>11</td><td>33</td></tr>
-      <tr><td>6R</td><td>31</td><td>12</td><td>36</td></tr>
-      <tr><td>6L</td><td>31</td><td>11</td><td>33</td></tr>
-      <tr><td>7R</td><td>36</td><td>11</td><td>33</td></tr>
-      <tr><td>7L</td><td>27</td><td>10</td><td>30</td></tr>
-      <tr><td>7M</td><td>27</td><td>9</td><td>27</td></tr>
-      <tr><td>8R</td><td>35</td><td>11</td><td>33</td></tr>
-      <tr><td>8L</td><td>34</td><td>11</td><td>33</td></tr>
-      <tr><td>8M</td><td>35</td><td>11</td><td>33</td></tr>
-      <tr><td>9R</td><td>32</td><td>11</td><td>33</td></tr>
-      <tr><td>9L</td><td>33</td><td>11</td><td>33</td></tr>
-      <tr><td>10</td><td>39</td><td>10</td><td>30</td></tr>
+      <tr><td>2R</td><td>33</td><td>9</td><td>36</td></tr>
+      <tr><td>2L</td><td>30</td><td>9</td><td>36</td></tr>
+      <tr><td>2T</td><td>31</td><td>8</td><td>32</td></tr>
+      <tr><td>2M</td><td>30</td><td>8</td><td>32</td></tr>
+      <tr><td>3R</td><td>26</td><td>8</td><td>32</td></tr>
+      <tr><td>3L</td><td>28</td><td>8</td><td>32</td></tr>
+      <tr><td>3M</td><td>24</td><td>8</td><td>32</td></tr>
+      <tr><td>3T</td><td>27</td><td>8</td><td>32</td></tr>
+      <tr><td>4R</td><td>36</td><td>10</td><td>40</td></tr>
+      <tr><td>4L</td><td>35</td><td>11</td><td>44</td></tr>
+      <tr><td>4M</td><td>38</td><td>11</td><td>44</td></tr>
+      <tr><td>5R</td><td>32</td><td>11</td><td>44</td></tr>
+      <tr><td>5L</td><td>32</td><td>11</td><td>44</td></tr>
+      <tr><td>5M</td><td>33</td><td>11</td><td>44</td></tr>
+      <tr><td>6R</td><td>31</td><td>12</td><td>48</td></tr>
+      <tr><td>6L</td><td>31</td><td>11</td><td>44</td></tr>
+      <tr><td>7R</td><td>36</td><td>11</td><td>44</td></tr>
+      <tr><td>7L</td><td>27</td><td>10</td><td>40</td></tr>
+      <tr><td>7M</td><td>27</td><td>9</td><td>36</td></tr>
+      <tr><td>8R</td><td>35</td><td>11</td><td>44</td></tr>
+      <tr><td>8L</td><td>34</td><td>11</td><td>44</td></tr>
+      <tr><td>8M</td><td>35</td><td>11</td><td>44</td></tr>
+      <tr><td>9R</td><td>32</td><td>11</td><td>44</td></tr>
+      <tr><td>9L</td><td>33</td><td>11</td><td>44</td></tr>
+      <tr><td>10</td><td>39</td><td>10</td><td>40</td></tr>
      </tbody></table>
     </div>
     <div>
      <h3>Room bench index</h3>
-     <label for="referenceCapacity">Students per bench</label><input id="referenceCapacity" type="number" min="1" step="1" value="3">
+     <label for="referenceCapacity">Students per bench</label><input id="referenceCapacity" type="number" min="1" step="1" value="4">
      <table><thead><tr><th>Room</th><th>Benches</th><th>Capacity</th></tr></thead><tbody id="referenceRooms"></tbody></table>
      <div class="btns index-actions"><button type="button" id="applyReferenceRooms">Apply reference rooms to planner</button></div>
      <p class="sub">Edit bench counts or students per bench, then apply these values as the planner's room list.</p>
@@ -175,11 +175,11 @@ th,td{border:1px solid #333;padding:3px 6px;text-align:left;vertical-align:top}t
   <div class="row2"><div><label for="rows">Rows</label><input id="rows" type="number" min="1" max="30" value="4"></div><div></div></div>
   <div class="row2">
    <div><label for="lb">Left side: benches</label><input id="lb" type="number" min="0" max="12" value="2"></div>
-   <div><label for="lp">Left: students per bench</label><input id="lp" type="number" min="1" step="1" value="2"></div>
+   <div><label for="lp">Left: students per bench</label><input id="lp" type="number" min="1" step="1" value="4"></div>
   </div>
   <div class="row2">
    <div><label for="rb">Right side: benches</label><input id="rb" type="number" min="0" max="12" value="2"></div>
-   <div><label for="rp">Right: students per bench</label><input id="rp" type="number" min="1" step="1" value="2"></div>
+   <div><label for="rp">Right: students per bench</label><input id="rp" type="number" min="1" step="1" value="4"></div>
   </div>
   <div class="btns">
    <button id="applydef" type="button">Apply this size to all rooms</button>
@@ -190,7 +190,7 @@ th,td{border:1px solid #333;padding:3px 6px;text-align:left;vertical-align:top}t
   <div id="rooms"></div>
   <h2>Print</h2>
   <div class="row2">
-   <div><label for="orient">Paper</label><select id="orient"><option value="portrait">A4 portrait</option><option value="landscape">A4 landscape</option></select></div>
+   <div><label for="orient">Paper</label><select id="orient"><option value="portrait">A4 portrait</option><option value="landscape" selected>A4 landscape</option></select></div>
    <div><label for="mix">Arrangement</label><select id="mix"><option value="col">Column-wise (school format)</option><option value="mix">Mix classes</option><option value="seq">In roll order</option></select></div>
   </div>
   <div class="row2">
@@ -202,6 +202,7 @@ th,td{border:1px solid #333;padding:3px 6px;text-align:left;vertical-align:top}t
    <button id="rescr" type="button">Scramble again</button>
    <button id="print" type="button">Print / Save PDF</button>
   </div>
+  <p class="sub" style="margin-top:8px"><a href="./reference-seat-planning-25-rooms-capacity-4.pdf" download>Download the default 25-room reference plan (PDF)</a></p>
   <div id="msg" role="status"></div>
  </div>
  <div class="panel pv"><div class="preview" id="out"><p class="sub">Your seating plan will appear here.</p></div></div>
@@ -209,12 +210,12 @@ th,td{border:1px solid #333;padding:3px 6px;text-align:left;vertical-align:top}t
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
 const $=id=>document.getElementById(id);
-let classes=[{c:'10',secs:[{s:'A',n:35},{s:'B',n:35}]},{c:'9',secs:[{s:'A',n:30}]}];
+let classes=[];
 const flat=()=>classes.flatMap(k=>k.secs.map(x=>({c:k.c,s:x.s,n:x.n,rolls:x.rolls,names:x.names})));
 let rooms=[];
 let plan=[];
-const REFERENCE_KEY='seat-planner-room-reference-v1';
-let referenceCapacity=3,referenceRoomBenches=[9,9,8,8,8,8,8,8,10,11,11,11,11,11,12,11,11,10,9,11,11,11,11,11,10];
+const REFERENCE_KEY='seat-planner-room-reference-v2';
+let referenceCapacity=4,referenceRoomBenches=[9,9,8,8,8,8,8,8,10,11,11,11,11,11,12,11,11,10,9,11,11,11,11,11,10];
 function saveReferenceValues(){
  try{localStorage.setItem(REFERENCE_KEY,JSON.stringify({capacity:referenceCapacity,benches:referenceRoomBenches}));return true}
  catch(err){$('referenceMsg').textContent=`Could not save reference values in this browser: ${err.message}`;return false}
@@ -222,22 +223,27 @@ function saveReferenceValues(){
 function loadReferenceValues(){
  try{
   const saved=JSON.parse(localStorage.getItem(REFERENCE_KEY)||'null');
-  if(saved&&Number.isSafeInteger(saved.capacity)&&saved.capacity>=1&&Array.isArray(saved.benches)&&saved.benches.length===referenceRoomBenches.length&&saved.benches.every(x=>Number.isInteger(x)&&x>=1&&x<=60)){
-   referenceCapacity=saved.capacity;referenceRoomBenches=saved.benches;
+  if(saved&&Array.isArray(saved.benches)&&saved.benches.length===referenceRoomBenches.length&&saved.benches.every(x=>Number.isInteger(x)&&x>=1&&x<=60)){
+   if(Number.isSafeInteger(saved.capacity)&&saved.capacity>=1)referenceCapacity=saved.capacity;
+   referenceRoomBenches=saved.benches;
   }
  }catch(err){$('referenceMsg').textContent=`Could not load saved reference values: ${err.message}`}
 }
 function drawReferenceRooms(){
  $('referenceCapacity').value=referenceCapacity;
  $('referenceRooms').innerHTML=referenceRoomBenches.map((benches,index)=>`<tr><td>${index+1}</td><td><input type="number" min="1" max="60" step="1" value="${benches}" data-reference-room="${index}" aria-label="Room ${index+1} benches"></td><td id="referenceCapacity${index}">${benches*referenceCapacity}</td></tr>`).join('');
+ document.querySelectorAll('.school-index .index-tables>div:first-child tbody tr').forEach(row=>{row.cells[3].textContent=Number(row.cells[2].textContent)*referenceCapacity});
 }
-function applyReferenceRooms(){
- if(!window.confirm('Replace the current room list with the editable reference rooms?'))return;
+function makeReferenceRooms(){
  const start=clamp($('start').value,0,1000000),prefix=$('prefix').value.trim()||'Room';
- rooms=referenceRoomBenches.map((benches,index)=>{
+ return referenceRoomBenches.map((benches,index)=>{
   const rowCount=Math.ceil(benches/12),rc=Array.from({length:rowCount},(_,row)=>({lb:Math.min(12,benches-row*12),lp:referenceCapacity,rb:0,rp:referenceCapacity}));
   return {name:`${prefix} ${start+index}`.trim(),r:rowCount,lb:rc[0].lb,lp:referenceCapacity,rb:0,rp:referenceCapacity,rc};
  });
+}
+function applyReferenceRooms(){
+ if(!window.confirm('Replace the current room list with the editable reference rooms?'))return;
+ rooms=makeReferenceRooms();
  $('nrooms').value=rooms.length;drawRooms();say('Applied editable reference room sizes. Generate the plans to check separate Primary and Secondary room assignments.');
 }
 loadReferenceValues();
@@ -323,7 +329,7 @@ document.querySelector('.school-index').addEventListener('change',e=>{
  drawReferenceRooms();
  if(saveReferenceValues())$('referenceMsg').textContent='Reference room values saved on this device.';
 });
-$('loadReferenceClasses').onclick=()=>{
+function loadReferenceClasses(notify=true){
  const byClass=new Map();
  const referenceRows=[...document.querySelectorAll('.school-index .index-tables>div:first-child table tbody tr')];
  referenceRows.forEach(row=>{
@@ -333,11 +339,13 @@ $('loadReferenceClasses').onclick=()=>{
   if(!byClass.has(c))byClass.set(c,{c,secs:[]});
   byClass.get(c).secs.push({s,n});
  });
- if(!byClass.size){say('The school reference index has no class data to load.',1);return}
+ if(!byClass.size){if(notify)say('The school reference index has no class data to load.',1);return false}
  classes=[...byClass.values()];
  drawGroups();
- say('Loaded reference class and section counts. Review room capacity, then generate both level plans.');
-};
+ if(notify)say('Loaded reference class and section counts. Review room capacity, then generate both level plans.');
+ return true;
+}
+$('loadReferenceClasses').onclick=()=>loadReferenceClasses();
 
 let seed=Math.floor(Math.random()*1e9);
 const mulberry=a=>()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
@@ -368,58 +376,83 @@ function bench(row,j){
 function conf(row,j,gs){const [a,b]=bench(row,j),seen=new Set();let d=0;for(let x=a;x<b;x++){const c=row.cells[x];if(!c)continue;const k=gs[c.g].c;if(seen.has(k))d++;else seen.add(k)}return d}
 // school format: each column holds one class, rolls run front to back, right side starts half a turn later.
 // Students of the same class never share a bench unless there is no other choice.
-function fillCols(rows,q,cnt,gs,rnd){
+function fillCols(rows,q,cnt,gs,rnd,seatAllocation){
  const tot=q.reduce((a,x)=>a+x.rolls.length,0),ex=q.map(x=>cnt*x.rolls.length/tot),n=ex.map(Math.floor);
  let rem=cnt-n.reduce((a,b)=>a+b,0);
  ex.map((x,i)=>[x-Math.floor(x),i]).sort((a,b)=>b[0]-a[0]).forEach(([,i])=>{if(rem>0&&n[i]<q[i].rolls.length){n[i]++;rem--}});
- const mine=q.map((x,i)=>x.rolls.splice(0,n[i]));
- let act=q.map((x,i)=>i).filter(i=>mine[i].length);
- if(rnd)act=shuf(act,rnd);
- const by=new Map();act.forEach(i=>{const c=gs[i].c;if(!by.has(c))by.set(c,[]);by.get(c).push(i)});
- const lists=[...by.values()],ord=[];
- for(let r=0;ord.length<act.length;r++)lists.forEach(l=>{if(l[r]!==undefined)ord.push(l[r])});
- act=ord;
- const K=act.length,half=Math.floor(K/2),W=Math.max(...rows.map(r=>r.cells.length)),left=mine.map(a=>a.length),has=i=>left[i]>0;
- // 1. decide which class sits where
- for(let j=0;j<W;j++)for(const row of rows){
-  if(j>=row.occ)continue;
-  const right=row.L>0&&j>=row.L,sj=right?j-row.L:j,{g,k}=mates(row,j,gs),lf=j?row.cells[j-1]:null;
-  let c=act[(sj+(right?half:0))%K];
-  if(!has(c)||k.has(gs[c].c)){
-   const pool=act.filter(has);
-   const use=[pool.filter(i=>!k.has(gs[i].c)&&!(lf&&lf.g===i)),pool.filter(i=>!k.has(gs[i].c)),pool.filter(i=>!g.has(i)),pool].find(a=>a.length);
-   c=use.reduce((a,b)=>left[b]>left[a]?b:a);
-  }
-  left[c]--;row.cells[j]={g:c};
- }
- // 2. swap seats to clear any bench that still has two students of one class
- const occ=[];rows.forEach((row,ri)=>{for(let j=0;j<row.occ;j++)occ.push([ri,j])});
- for(let pass=0;pass<4;pass++){
-  let changed=false;
-  for(const [ri,j] of occ){
-   const A=rows[ri];if(!conf(A,j,gs))continue;
-   for(const [rj,x] of occ){
-    const B=rows[rj],a=A.cells[j],b=B.cells[x];if(a.g===b.g)continue;
-    const same=rj===ri&&bench(A,j)[0]===bench(B,x)[0],before=conf(A,j,gs)+(same?0:conf(B,x,gs));
-    A.cells[j]=b;B.cells[x]=a;
-    if(conf(A,j,gs)+(same?0:conf(B,x,gs))<before){changed=true;break}
-    A.cells[j]=a;B.cells[x]=b;
+ const mine=q.map((x,i)=>x.rolls.splice(0,seatAllocation?seatAllocation[i]:n[i]));
+ const benches=[];
+ rows.forEach((row,ri)=>{
+  const rowBenches=[];
+  const add=(start,end,size)=>{for(let pos=start;pos<end;pos+=Math.max(1,size))rowBenches.push({ri,positions:Array.from({length:Math.min(size,end-pos)},(_,i)=>pos+i),classes:new Set(),used:0,tie:ri*1000+rowBenches.length})};
+  add(0,row.L,row.lp);
+  add(row.L,row.cells.length,row.rp);
+  const base=Math.floor(row.occ/rowBenches.length),extra=row.occ%rowBenches.length;
+  rowBenches.forEach((b,i)=>{b.goal=Math.min(b.positions.length,base+(i<extra?1:0))});
+  benches.push(...rowBenches);
+ });
+ const byClass=new Map();
+ q.forEach((x,i)=>{if(!mine[i].length)return;const c=gs[i].c;if(!byClass.has(c))byClass.set(c,[]);byClass.get(c).push(i)});
+ let groups=[...byClass].map(([c,indices])=>({c,indices,count:indices.reduce((sum,i)=>sum+mine[i].length,0)}));
+ if(rnd)groups.forEach(group=>group.tie=rnd());
+ groups.sort((a,b)=>b.count-a.count||(a.tie||0)-(b.tie||0));
+ const active=benches.filter(b=>b.goal>0);
+ if(rnd){const tieOrder=shuf(benches.map((_,i)=>i),rnd);tieOrder.forEach((i,rank)=>{benches[i].tie=rank})}
+ const possible=groups.every(g=>g.count<=active.length);
+ if(possible){
+  let assigned=true;
+  for(const group of groups){
+   const sections=group.indices.map(i=>({i,left:mine[i].length}));
+   for(let count=0;count<group.count;count++){
+    const available=active.filter(b=>b.used<b.goal&&!b.classes.has(group.c)).sort((a,b)=>(b.goal-b.used)-(a.goal-a.used)||a.tie-b.tie);
+    if(!available.length){assigned=false;break}
+    const target=available[0],section=sections.reduce((a,b)=>b.left>a.left?b:a);
+    target.classes.add(group.c);
+    const row=rows[target.ri],position=target.positions[target.used++];
+    row.cells[position]={g:section.i};section.left--;
    }
+   if(!assigned)break;
   }
-  if(!changed)break;
+  if(!assigned){rows.forEach(row=>row.cells.fill(null));fillRows(rows,mine.map((rolls,i)=>({i,rolls:[...rolls]})),gs,false);return}
+ }else{
+  rows.forEach(row=>row.cells.fill(null));
+  fillRows(rows,mine.map((rolls,i)=>({i,rolls:[...rolls]})),gs,false);
+  return;
  }
- // 3. give roll numbers down each column, in the chosen order
+ const W=Math.max(...rows.map(r=>r.cells.length));
  for(let j=0;j<W;j++)for(const row of rows){
-  const c=row.cells[j];if(!c||j>=row.occ)continue;
+  const c=row.cells[j];if(!c)continue;
   const roll=mine[c.g].shift();c.r=roll;c.n=(gs[c.g].names||{})[roll]||'';
  }
 }
 function buildLevelPlan(level,gs,assignedRooms,mode,desc){
  const q=gs.map((g,i)=>({i,rolls:(g.rolls?g.rolls.slice():Array.from({length:g.n},(_,k)=>k+1)).sort((a,b)=>desc?b-a:a-b)}));
  const T=q.reduce((a,x)=>a+x.rolls.length,0),caps=assignedRooms.map(x=>cap(x.room)),S=caps.reduce((a,b)=>a+b,0);
- const exact=caps.map(c=>T*c/S),cnt=exact.map(Math.floor);
+ const exact=caps.map(c=>T*c/S);
+ let cnt=exact.map(Math.floor);
  let rem=T-cnt.reduce((a,b)=>a+b,0);
  exact.map((x,i)=>[x-Math.floor(x),i]).sort((a,b)=>b[0]-a[0]).forEach(([,i])=>{if(rem>0&&cnt[i]<caps[i]){cnt[i]++;rem--}});
+ const proportionalCounts=cnt.slice();
+ let classAllocation=null;
+ if(mode==='col'){
+  classAllocation=caps.map(()=>Array(q.length).fill(0));
+  const byClass=new Map();
+  q.forEach((group,gi)=>{const c=gs[gi].c;if(!byClass.has(c))byClass.set(c,[]);byClass.get(c).push(gi)});
+  byClass.forEach(indices=>{
+   const classTotal=indices.reduce((sum,i)=>sum+q[i].rolls.length,0),exactClass=caps.map(c=>classTotal*c/S),classRooms=exactClass.map(Math.floor);
+   let left=classTotal-classRooms.reduce((a,b)=>a+b,0);
+   exactClass.map((x,i)=>[x-Math.floor(x),i]).sort((a,b)=>b[0]-a[0]).forEach(([,i])=>{if(left>0){classRooms[i]++;left--}});
+   const sectionLeft=indices.map(i=>({i,left:q[i].rolls.length}));
+   classRooms.forEach((roomCount,roomIndex)=>{
+    for(let n=0;n<roomCount;n++){
+     const section=sectionLeft.reduce((a,b)=>b.left>a.left?b:a);
+     classAllocation[roomIndex][section.i]++;section.left--;
+    }
+   });
+  });
+  cnt=classAllocation.map(allocation=>allocation.reduce((sum,n)=>sum+n,0));
+  if(cnt.some((n,i)=>n>caps[i])){classAllocation=null;cnt=proportionalCounts}
+ }
  const rl=[];
  assignedRooms.forEach(({room:m,index},k)=>{
   if(!cnt[k])return;
@@ -429,7 +462,7 @@ function buildLevelPlan(level,gs,assignedRooms,mode,desc){
    const occ=Math.min(c,left),x=rcfg(m,i);left-=occ;
    rows.push({cells:Array(c).fill(null),occ,L:x.lb*x.lp,R:x.rb*x.rp,lp:x.lp,rp:x.rp,idx:i+1});
   });
-  if(mode==='col')fillCols(rows,q,cnt[k],gs,$('scr').checked?mulberry(seed+index*7919):null);else fillRows(rows,q,gs,mode==='mix');
+  if(mode==='col')fillCols(rows,q,cnt[k],gs,$('scr').checked?mulberry(seed+index*7919):null,classAllocation?classAllocation[k]:null);else fillRows(rows,q,gs,mode==='mix');
   rl.push({name:m.name||`Room ${index+1}`,rows,cnt:cnt[k]});
  });
  return {level,gs,rl,T};
@@ -635,7 +668,9 @@ async function initCloud(){
   db.collection('plans').orderBy('savedAt','desc').onSnapshot(sn=>{cloud=sn.docs.map(d=>({...d.data(),id:d.id}));drawSaved()},()=>{db=null;cloud=[];drawSaved()});
  }catch(e){db=null}
 }
-drawGroups();setCount(Math.max(1,Math.ceil(total()/Math.max(1,defCap()))));generate();drawSaved();initCloud();
+loadReferenceClasses(false);
+rooms=makeReferenceRooms();$('nrooms').value=rooms.length;
+drawGroups();drawRooms();generate();drawSaved();initCloud();
 </script>
 </body>
 </html>
