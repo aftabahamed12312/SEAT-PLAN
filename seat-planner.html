@@ -138,7 +138,7 @@ th,td{border:1px solid #333;padding:3px 6px;text-align:left;vertical-align:top}t
   <h2>Print</h2>
   <div class="row2">
    <div><label for="orient">Paper</label><select id="orient"><option value="portrait">A4 portrait</option><option value="landscape">A4 landscape</option></select></div>
-   <div><label for="mix">Arrangement</label><select id="mix"><option value="mix">Mix classes (keep sections in order)</option><option value="seq">In roll order</option></select></div>
+   <div><label for="mix">Arrangement</label><select id="mix"><option value="mix">Group classes (sections in order)</option><option value="seq">In roll order</option></select></div>
   </div>
   <div class="btns">
    <button class="pri" id="gen" type="button">Make seating plan</button>
@@ -345,59 +345,27 @@ function generate(save=true){
  if(!gs.length){say('Add at least one class with students.',1);return}
  const bad=rooms.find(m=>cap(m)<1);
  if(bad){say(`Room "${bad.name||'unnamed'}" needs at least 1 row, 1 bench and 1 seat per bench. Fix or remove it.`,1);return}
- const q=gs.map((g,i)=>({i,rolls:g.rolls?g.rolls.slice():Array.from({length:g.n},(_,k)=>k+1)}));
+ const mix=$('mix').value==='mix';
+ const classOrder=[...new Map(gs.map(g=>[g.c.trim().toLowerCase(),g.c.trim()])).values()];
+ const orderedGroups=mix?classOrder.flatMap(cls=>gs.map((g,i)=>({g,i})).filter(x=>x.g.c.trim().toLowerCase()===cls.toLowerCase())):gs.map((g,i)=>({g,i}));
+ const q=orderedGroups.map(({g,i})=>({i,rolls:g.rolls?g.rolls.slice():Array.from({length:g.n},(_,k)=>k+1)}));
  const T=q.reduce((a,x)=>a+x.rolls.length,0),caps=rooms.map(cap),S=caps.reduce((a,b)=>a+b,0);
  if(T>S){say(`${T} students but only ${S} seats. Add rooms or make rooms bigger (short by ${T-S} seats).`,1);return}
  // share students across rooms in proportion to capacity
  const exact=caps.map(c=>T*c/S),cnt=exact.map(Math.floor);
  let rem=T-cnt.reduce((a,b)=>a+b,0);
  exact.map((x,i)=>[x-Math.floor(x),i]).sort((a,b)=>b[0]-a[0]).forEach(([,i])=>{if(rem>0&&cnt[i]<caps[i]){cnt[i]++;rem--}});
- const mix=$('mix').value==='mix',rl=[];
+ const rl=[];
  rooms.forEach((m,k)=>{
   if(!cnt[k])return;
   const rows=[];let left=cnt[k];
   const caps=rowCaps(m);
-  const classOrder=[...new Map(gs.map(g=>[g.c.trim().toLowerCase(),g.c])).values()];
-  let classCursor=0;
-  const chooseMixedClass=(leftCell,upCell)=>{
-   const available=q.filter(x=>x.rolls.length);
-   const classOf=cell=>gs[cell.g].c.trim().toLowerCase();
-   for(let pass=0;pass<2;pass++){
-    for(let offset=0;offset<classOrder.length;offset++){
-     const index=(classCursor+offset)%classOrder.length,cls=classOrder[index].trim().toLowerCase();
-     const candidate=available.find(x=>gs[x.i].c.trim().toLowerCase()===cls);
-     if(!candidate)continue;
-     if(pass===0&&((leftCell&&classOf(leftCell)===cls)||(upCell&&classOf(upCell)===cls)))continue;
-     classCursor=(index+1)%classOrder.length;
-     return candidate;
-    }
-   }
-   return null;
-  };
-  const chooseClass=preferred=>{
-   const available=q.filter(x=>x.rolls.length);
-   if(!available.length)return null;
-   const sameClass=(a,b)=>gs[a.i].c.trim().toLowerCase()===b.trim().toLowerCase();
-   const availableFor=cls=>available.filter(x=>sameClass(x,cls));
-   for(let offset=0;offset<classOrder.length;offset++){
-    const cls=classOrder[(preferred+offset)%classOrder.length],pool=availableFor(cls);
-    if(pool.length)return pool[0];
-   }
-   return null;
-  };
   const placeRow=(c,i,prev,side,sideRow)=>{
    if((left<=0&&!m.split)||c<1)return null;
    const cells=Array(c).fill(null);
    for(let j=0;j<c&&left>0;j++){
     const lf=j?cells[j-1]:null,up=prev?prev.cells[j]||null:null,pool=q.filter(x=>x.rolls.length);
-    let pick;
-    if(mix&&m.split&&classOrder.length===4){
-     const order=side===1||((sideRow-1)%4===3)?[2,3,0,1]:[0,1,2,3];
-     pick=chooseClass(order[j%order.length]);
-    }else if(mix){
-     pick=chooseMixedClass(lf,up);
-    }
-    else pick=pool[0];
+    const pick=pool[0];
     if(!pick)break;
     const roll=pick.rolls.shift();cells[j]={g:pick.i,r:roll,n:(gs[pick.i].names||{})[roll]||''};left--;
    }
