@@ -374,7 +374,8 @@ function generate(save=true){
    for(let j=0;j<c&&left>0;j++){
     const pick=nextQueue();
     if(!pick)break;
-    const roll=pick.rolls.shift();cells[j]={g:pick.i,r:roll,n:(gs[pick.i].names||{})[roll]||''};left--;
+    const seatIndex=(sideRow??i+1)%2===0?c-1-j:j;
+    const roll=pick.rolls.shift();cells[seatIndex]={g:pick.i,r:roll,n:(gs[pick.i].names||{})[roll]||''};left--;
    }
    const row={cells,p:m.rc?m.rc[i].p:m.p,b:m.rc?m.rc[i].b:m.b,idx:i+1,side,sideRow};rows.push(row);return row;
   };
