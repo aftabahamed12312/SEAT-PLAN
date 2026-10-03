@@ -138,7 +138,7 @@ th,td{border:1px solid #333;padding:3px 6px;text-align:left;vertical-align:top}t
   <h2>Print</h2>
   <div class="row2">
    <div><label for="orient">Paper</label><select id="orient"><option value="portrait">A4 portrait</option><option value="landscape">A4 landscape</option></select></div>
-   <div><label for="mix">Arrangement</label><select id="mix"><option value="mix">Group classes (sections in order)</option><option value="seq">In roll order</option></select></div>
+   <div><label for="mix">Arrangement</label><select id="mix"><option value="mix">Mix classes &amp; sections (rolls in order)</option><option value="seq">In roll order</option></select></div>
   </div>
   <div class="btns">
    <button class="pri" id="gen" type="button">Make seating plan</button>
@@ -349,6 +349,14 @@ function generate(save=true){
  const classOrder=[...new Map(gs.map(g=>[g.c.trim().toLowerCase(),g.c.trim()])).values()];
  const orderedGroups=mix?classOrder.flatMap(cls=>gs.map((g,i)=>({g,i})).filter(x=>x.g.c.trim().toLowerCase()===cls.toLowerCase())):gs.map((g,i)=>({g,i}));
  const q=orderedGroups.map(({g,i})=>({i,rolls:g.rolls?g.rolls.slice():Array.from({length:g.n},(_,k)=>k+1)}));
+ let groupCursor=0;
+ const nextQueue=mix?()=>{
+  for(let offset=0;offset<q.length;offset++){
+   const index=(groupCursor+offset)%q.length;
+   if(q[index].rolls.length){groupCursor=(index+1)%q.length;return q[index]}
+  }
+  return null;
+ }:()=>q.find(x=>x.rolls.length)||null;
  const T=q.reduce((a,x)=>a+x.rolls.length,0),caps=rooms.map(cap),S=caps.reduce((a,b)=>a+b,0);
  if(T>S){say(`${T} students but only ${S} seats. Add rooms or make rooms bigger (short by ${T-S} seats).`,1);return}
  // share students across rooms in proportion to capacity
@@ -364,8 +372,7 @@ function generate(save=true){
    if((left<=0&&!m.split)||c<1)return null;
    const cells=Array(c).fill(null);
    for(let j=0;j<c&&left>0;j++){
-    const lf=j?cells[j-1]:null,up=prev?prev.cells[j]||null:null,pool=q.filter(x=>x.rolls.length);
-    const pick=pool[0];
+    const pick=nextQueue();
     if(!pick)break;
     const roll=pick.rolls.shift();cells[j]={g:pick.i,r:roll,n:(gs[pick.i].names||{})[roll]||''};left--;
    }
