@@ -207,7 +207,7 @@ function buildSummaryReport(seatingPlan){
   })
  };
 }
-function saveCurrentPlan(){
+function saveCurrentPlan(notice=''){
  const saved=readSavedPlans();
  if(!saved)return false;
  const school=$('school').value.trim()||'Untitled school';
@@ -228,11 +228,11 @@ function saveCurrentPlan(){
   if(index>=0)saved[index]=record;else saved.push(record);
   localStorage.setItem(SAVED_PLANS_KEY,JSON.stringify(saved));
  }catch(err){
-  say(`Plan generated, but could not save it in this browser: ${err.message}`,1);
+  say(`Plan generated, but could not save it in this browser: ${err.message}${notice}`,1);
   return false;
  }
  if(!refreshSavedPlans(id))return false;
- say(`Plan saved as "${name}". Select it under Saved plans to reuse it.`);
+ say(`Plan saved as "${name}". Select it under Saved plans to reuse it.${notice}`);
  return true;
 }
 function restoreSavedPlan(){
@@ -350,13 +350,15 @@ function generate(save=true){
  const classGroups=classOrder.map(cls=>gs.map((g,i)=>({g,i})).filter(x=>x.g.c.trim().toLowerCase()===cls.toLowerCase()));
  const orderedGroups=mix?Array.from({length:Math.max(...classGroups.map(x=>x.length))},(_,sectionIndex)=>classGroups.flatMap(sections=>sections[sectionIndex]?[sections[sectionIndex]]:[])).flat():gs.map((g,i)=>({g,i}));
  const q=orderedGroups.map(({g,i})=>({i,rolls:g.rolls?g.rolls.slice():Array.from({length:g.n},(_,k)=>k+1)}));
- let groupCursor=0;
+ let groupCursor=0,sameClassBenchPairs=0;
  const nextQueue=mix?(excludeClass='')=>{
-  for(let offset=0;offset<q.length;offset++){
-   const index=(groupCursor+offset)%q.length,item=q[index];
-   if(!item.rolls.length||excludeClass&&gs[item.i].c.trim().toLowerCase()===excludeClass)continue;
-   groupCursor=(index+1)%q.length;
-   return item;
+  for(let pass=0;pass<2;pass++){
+   for(let offset=0;offset<q.length;offset++){
+    const index=(groupCursor+offset)%q.length,item=q[index];
+    if(!item.rolls.length||pass===0&&excludeClass&&gs[item.i].c.trim().toLowerCase()===excludeClass)continue;
+    groupCursor=(index+1)%q.length;
+    return item;
+   }
   }
   return null;
  }:()=>q.find(x=>x.rolls.length)||null;
@@ -382,6 +384,7 @@ function generate(save=true){
     const excludeClass=benchClass?gs[benchClass.g].c.trim().toLowerCase():'';
     const pick=nextQueue(excludeClass);
     if(!pick)break;
+    if(benchClass&&gs[pick.i].c.trim().toLowerCase()===excludeClass)sameClassBenchPairs++;
     const roll=pick.rolls.shift();cells[seatIndex]={g:pick.i,r:roll,n:(gs[pick.i].names||{})[roll]||''};left--;
    }
    const row={cells,p:m.rc?m.rc[i].p:m.p,b:m.rc?m.rc[i].b:m.b,idx:i+1,side,sideRow};rows.push(row);return row;
@@ -398,13 +401,12 @@ function generate(save=true){
   }
   rl.push({name:m.name||`Room ${k+1}`,rows,cnt:cnt[k],aisle:m.aisle||0,split:!!m.split,totalRows:m.r,capacity:cap(m)});
  });
- const unseated=q.reduce((sum,item)=>sum+item.rolls.length,0);
- if(unseated){say(`${unseated} students cannot be seated without putting the same class on one bench. Add room capacity or adjust the class distribution.`,1);return}
  plan={gs,rl,T};
  render();
  const unused=rooms.length-rl.length;
- say(`${T} students placed in ${rl.length} room${rl.length>1?'s':''}${unused?` (${unused} left empty)`:''}. Press the button again after any change.`);
- if(save)saveCurrentPlan();
+ const notice=sameClassBenchPairs?` ${sameClassBenchPairs} same-class bench pair${sameClassBenchPairs===1?' was':'s were'} unavoidable because of the class distribution.`:'';
+ if(save)saveCurrentPlan(notice);
+ else say(`${T} students placed in ${rl.length} room${rl.length>1?'s':''}${unused?` (${unused} left empty)`:''}.${notice} Press the button again after any change.`);
 }
 function render(){
  if(!plan)return;
