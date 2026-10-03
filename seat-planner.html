@@ -178,6 +178,7 @@ th,td{border:1px solid #333;padding:3px 6px;text-align:left;vertical-align:top}t
   <div class="row2"><div><label for="exam">Exam</label><input id="exam" value="First Assessment Test -2083"></div>
   <div><label for="date">Date</label><input id="date" type="date"></div></div>
   <h2>Classes</h2>
+  <p class="sub">Seat plans are generated separately: Primary (Classes 2–5) and Secondary (Classes 6–10). Configured rooms are automatically divided by student and room capacity.</p>
   <div id="groups"></div>
   <button id="add" type="button">Add class</button>
   <label for="file">Or import Excel / CSV (columns: Class, Section, Roll, Name optional)</label>
@@ -229,7 +230,7 @@ const $=id=>document.getElementById(id);
 let classes=[{c:'10',secs:[{s:'A',n:35},{s:'B',n:35}]},{c:'9',secs:[{s:'A',n:30}]}];
 const flat=()=>classes.flatMap(k=>k.secs.map(x=>({c:k.c,s:x.s,n:x.n,rolls:x.rolls,names:x.names})));
 let rooms=[];
-let plan=null;
+let plan=[];
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const lab=g=>`${esc(g.c)}${g.s?'"'+esc(g.s)+'"':''}`;
 const rno=n=>{const m=String(n).match(/(\d+)\s*$/);return m?m[1]:n};
@@ -371,21 +372,14 @@ function fillCols(rows,q,cnt,gs,rnd){
   const roll=mine[c.g].shift();c.r=roll;c.n=(gs[c.g].names||{})[roll]||'';
  }
 }
-function generate(){
- const gs=flat().filter(g=>g.c.trim()&&(g.rolls?g.rolls.length:g.n>0));
- if(!gs.length){say('Add at least one class with students.',1);return}
- const bad=rooms.find(m=>cap(m)<1);
- if(bad){say(`Room "${bad.name||'unnamed'}" needs at least 1 row, 1 bench and 1 seat per bench. Fix or remove it.`,1);return}
- const desc=$('rord').value==='desc',srt=a=>{a.sort((x,y)=>x-y);return desc?a.reverse():a};
- const q=gs.map((g,i)=>({i,rolls:srt(g.rolls?g.rolls.slice():Array.from({length:g.n},(_,k)=>k+1))}));
- const T=q.reduce((a,x)=>a+x.rolls.length,0),caps=rooms.map(cap),S=caps.reduce((a,b)=>a+b,0);
- if(T>S){say(`${T} students but only ${S} seats. Add rooms or make rooms bigger (short by ${T-S} seats).`,1);return}
- // share students across rooms in proportion to capacity
+function buildLevelPlan(level,gs,assignedRooms,mode,desc){
+ const q=gs.map((g,i)=>({i,rolls:(g.rolls?g.rolls.slice():Array.from({length:g.n},(_,k)=>k+1)).sort((a,b)=>desc?b-a:a-b)}));
+ const T=q.reduce((a,x)=>a+x.rolls.length,0),caps=assignedRooms.map(x=>cap(x.room)),S=caps.reduce((a,b)=>a+b,0);
  const exact=caps.map(c=>T*c/S),cnt=exact.map(Math.floor);
  let rem=T-cnt.reduce((a,b)=>a+b,0);
  exact.map((x,i)=>[x-Math.floor(x),i]).sort((a,b)=>b[0]-a[0]).forEach(([,i])=>{if(rem>0&&cnt[i]<caps[i]){cnt[i]++;rem--}});
- const mode=$('mix').value,rl=[];
- rooms.forEach((m,k)=>{
+ const rl=[];
+ assignedRooms.forEach(({room:m,index},k)=>{
   if(!cnt[k])return;
   const rows=[];let left=cnt[k];
   rowCaps(m).forEach((c,i)=>{
@@ -393,42 +387,111 @@ function generate(){
    const occ=Math.min(c,left),x=rcfg(m,i);left-=occ;
    rows.push({cells:Array(c).fill(null),occ,L:x.lb*x.lp,R:x.rb*x.rp,lp:x.lp,rp:x.rp,idx:i+1});
   });
-  if(mode==='col')fillCols(rows,q,cnt[k],gs,$('scr').checked?mulberry(seed+k*7919):null);else fillRows(rows,q,gs,mode==='mix');
-  rl.push({name:m.name||`Room ${k+1}`,rows,cnt:cnt[k]});
+  if(mode==='col')fillCols(rows,q,cnt[k],gs,$('scr').checked?mulberry(seed+index*7919):null);else fillRows(rows,q,gs,mode==='mix');
+  rl.push({name:m.name||`Room ${index+1}`,rows,cnt:cnt[k]});
  });
- plan={gs,rl,T};
+ return {level,gs,rl,T};
+}
+function generate(){
+ plan=[];
+ const fail=message=>{ $('out').innerHTML='<p class="sub">Your seating plan will appear here.</p>';say(message,1);return false };
+ const gs=flat().filter(g=>g.c.trim()&&(g.rolls?g.rolls.length:g.n>0));
+ if(!gs.length)return fail('Add at least one class with students.');
+ const bad=rooms.find(m=>cap(m)<1);
+ if(bad)return fail(`Room "${bad.name||'unnamed'}" needs at least 1 row and 1 bench with students. Fix or remove it.`);
+ const primary=[],secondary=[],unassigned=[];
+ gs.forEach(g=>{
+  const match=String(g.c).match(/\d+/),classNumber=match?Number(match[0]):NaN;
+  if(classNumber>=2&&classNumber<=5)primary.push(g);
+  else if(classNumber>=6&&classNumber<=10)secondary.push(g);
+  else unassigned.push(g);
+ });
+ if(unassigned.length)return fail(`Class "${unassigned[0].c}" is outside Primary (2–5) and Secondary (6–10). Rename it to a class number from 2 to 10 before generating these plans.`);
+ if(!primary.length&&!secondary.length)return fail('Add students from Classes 2–10 to generate Primary and Secondary plans.');
+ const classTotals=[primary,secondary].map(list=>list.reduce((sum,g)=>sum+(g.rolls?g.rolls.length:g.n),0));
+ const [primaryTotal,secondaryTotal]=classTotals,totalStudents=primaryTotal+secondaryTotal;
+ const totalCapacity=rooms.reduce((sum,room)=>sum+cap(room),0);
+ if(totalStudents>totalCapacity)return fail(`${totalStudents} students but only ${totalCapacity} seats. Add rooms or make rooms bigger (short by ${totalStudents-totalCapacity} seats).`);
+ const roomAssignments={Primary:[],Secondary:[]};
+ if(!primaryTotal)roomAssignments.Secondary=rooms.map((room,index)=>({room,index}));
+ else if(!secondaryTotal)roomAssignments.Primary=rooms.map((room,index)=>({room,index}));
+ else{
+  let reachable=new Map([[0,[]]]),dpComplete=true;
+  for(let index=0;index<rooms.length;index++){
+   const capacity=cap(rooms[index]);
+   for(const [sum,indices] of [...reachable]){
+    const next=sum+capacity;
+    if(!reachable.has(next))reachable.set(next,[...indices,index]);
+   }
+   if(reachable.size>100000){dpComplete=false;break}
+  }
+  let best=null;
+  if(dpComplete){
+   const target=totalCapacity*primaryTotal/totalStudents;
+   for(const [capacity,indices] of reachable){
+    if(capacity<primaryTotal||totalCapacity-capacity<secondaryTotal)continue;
+    const score=Math.abs(capacity-target);
+    if(!best||score<best.score)best={capacity,indices,score};
+   }
+  }else{
+   const ordered=rooms.map((room,index)=>({room,index,capacity:cap(room)})).sort((a,b)=>b.capacity-a.capacity);
+   const selected=[];let primaryCapacity=0;
+   for(let i=0;i<ordered.length;i++){
+    const candidate=ordered[i],remaining=ordered.slice(i+1).reduce((sum,x)=>sum+x.capacity,0);
+    const roomForSecondary=totalCapacity-primaryCapacity-candidate.capacity;
+    if(need>0&&roomForSecondary>=secondaryTotal&&Math.abs(primaryCapacity+candidate.capacity-primaryTotal)<=Math.abs(primaryCapacity-primaryTotal)){
+     selected.push(candidate.index);primaryCapacity+=candidate.capacity;
+    }else if(primaryCapacity<primaryTotal&&remaining<primaryTotal-primaryCapacity&&roomForSecondary>=secondaryTotal){
+     selected.push(candidate.index);primaryCapacity+=candidate.capacity;
+    }
+   }
+   if(primaryCapacity>=primaryTotal&&totalCapacity-primaryCapacity>=secondaryTotal)best={indices:selected};
+  }
+  if(!best)return fail('The configured rooms cannot be divided into separate Primary and Secondary room sets with enough seats for both. Increase room capacity or adjust the room sizes.');
+  const primarySet=new Set(best.indices);
+  rooms.forEach((room,index)=>roomAssignments[primarySet.has(index)?'Primary':'Secondary'].push({room,index}));
+ }
+ const mode=$('mix').value,desc=$('rord').value==='desc';
+ plan=[];
+ if(primaryTotal)plan.push(buildLevelPlan('Primary',primary,roomAssignments.Primary,mode,desc));
+ if(secondaryTotal)plan.push(buildLevelPlan('Secondary',secondary,roomAssignments.Secondary,mode,desc));
  render();
- const unused=rooms.length-rl.length;
- say(`${T} students placed in ${rl.length} room${rl.length>1?'s':''}${unused?` (${unused} left empty)`:''}. Press the button again after any change.`);
+ const roomCount=plan.reduce((sum,x)=>sum+x.rl.length,0);
+ say(`${primaryTotal?`Primary: ${primaryTotal} students in ${plan.find(x=>x.level==='Primary').rl.length} rooms`:''}${primaryTotal&&secondaryTotal?' | ':''}${secondaryTotal?`Secondary: ${secondaryTotal} students in ${plan.find(x=>x.level==='Secondary').rl.length} rooms`:''}. Press the button again after any change.`);
+ return roomCount>0;
 }
 function render(){
- if(!plan)return;
- const {gs,rl,T}=plan,land=$('orient').value==='landscape',L=land?'land':'';
+ if(!plan.length)return;
+ const land=$('orient').value==='landscape',L=land?'land':'';
  $('pg').textContent=`@page{size:A4 ${land?'landscape':'portrait'};margin:10mm}`;
  const dt=$('date').value?new Date($('date').value).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}):'';
- const head=(title,rm)=>`<div class="hd"><div class="sn">${esc($('school').value)}</div><div>${esc($('addr').value)}</div><div class="ex">${esc($('exam').value)}</div><div class="sp">${title}</div></div><div class="rn"><span>${dt}</span><b>${rm||''}</b></div>`;
- const stats=rl.map(r=>{const m={};r.rows.forEach(w=>w.cells.forEach(c=>{if(c)(m[c.g]=m[c.g]||[]).push(c.r)}));return m});
- let h=`<div class="sheet first ${L}">${head('Room Allocation',`Total students: ${T}`)}<h4>Room-wise</h4>
- <table><thead><tr><th>Room</th><th>Class</th><th>Students</th><th>Roll numbers</th></tr></thead>`;
- rl.forEach((r,k)=>{const ids=Object.keys(stats[k]).map(Number).sort((a,b)=>a-b);
-  ids.forEach((gi,j)=>{h+=`<tr>${j?'':`<td rowspan="${ids.length}"><b>${esc(r.name)}</b><br>${r.cnt} total</td>`}<td>${lab(gs[gi])}</td><td>${stats[k][gi].length}</td><td>${rng(stats[k][gi])}</td></tr>`})});
- h+=`</table><h4>Class-wise</h4><table><thead><tr><th>Class</th><th>Students</th><th>Where to sit</th></tr></thead>`;
- gs.forEach((g,gi)=>{const parts=[];let tot=0;rl.forEach((r,k)=>{const a=stats[k][gi];if(a){tot+=a.length;parts.push(`<b>${esc(r.name)}</b>: ${rng(a)}`)}});
-  h+=`<tr><td>${lab(g)}</td><td>${tot}</td><td>${parts.join('; ')}</td></tr>`});
- h+=`</table></div>`;
- rl.forEach((r,k)=>{
-  const maxS=Math.max(...r.rows.map(x=>x.cells.length)),colw=Math.min(30,((land?297:210)-20)/(maxS+(r.rows.some(w=>w.L>0&&w.R>0)?0.6:0))-0.5),fs=Math.max(13,Math.min(22,colw*0.5));
-  const rowFs=Math.max(8,Math.min(fs,260/r.rows.length));
-  h+=`<div class="sheet pb ${L}">${head('Seat Planning',`Room no.: ${esc(rno(r.name))}`)}<div class="seat-layout" style="--fs:${rowFs.toFixed(1)}px;--w:${colw.toFixed(1)}mm">`;
-  r.rows.forEach(row=>{h+=`<div class="srow">`;
-   row.cells.forEach((c,j)=>{const gp=row.L>0&&row.R>0&&j===row.L?' aisle':'';
-    h+=c?`<div class="sc${gp}"><div class="t">${lab(gs[c.g])}</div><div class="v">${c.r}</div>${c.n?`<div class="nm">${esc(c.n.slice(0,16))}</div>`:''}</div>`
-        :`<div class="sc em${gp}"><div class="t">-</div><div class="v">-</div></div>`});
-   h+=`</div>`});
-  const ids=Object.keys(stats[k]).map(Number).sort((a,b)=>a-b);
-  h+=`</div><table class="st"><tr><th>Class</th><th>Roll no.</th><th>Total</th></tr>${ids.map(gi=>`<tr><td>${lab(gs[gi])}</td><td>${[...stats[k][gi]].sort((a,b)=>a-b).join(',')}</td><td>${stats[k][gi].length}</td></tr>`).join('')}
-  <tr><td colspan="2"><b>Total students</b></td><td><b>${r.cnt}</b></td></tr></table></div>`;
- });
+ let h='';
+ for(const levelPlan of plan){
+  const {level,gs,rl,T}=levelPlan;
+  const head=(title,rm)=>`<div class="hd"><div class="sn">${esc($('school').value)}</div><div>${esc($('addr').value)}</div><div class="ex">${esc($('exam').value)}</div><div class="sp">${level} Level — ${title}</div></div><div class="rn"><span>${dt}</span><b>${rm||''}</b></div>`;
+  const stats=rl.map(r=>{const m={};r.rows.forEach(w=>w.cells.forEach(c=>{if(c)(m[c.g]=m[c.g]||[]).push(c.r)}));return m});
+  h+=`<div class="sheet first ${L}">${head('Room Allocation',`Total students: ${T}`)}<h4>Room-wise</h4>
+  <table><thead><tr><th>Room</th><th>Class</th><th>Students</th><th>Roll numbers</th></tr></thead>`;
+  rl.forEach((r,k)=>{const ids=Object.keys(stats[k]).map(Number).sort((a,b)=>a-b);
+   ids.forEach((gi,j)=>{h+=`<tr>${j?'':`<td rowspan="${ids.length}"><b>${esc(r.name)}</b><br>${r.cnt} total</td>`}<td>${lab(gs[gi])}</td><td>${stats[k][gi].length}</td><td>${rng(stats[k][gi])}</td></tr>`})});
+  h+=`</table><h4>Class-wise</h4><table><thead><tr><th>Class</th><th>Students</th><th>Where to sit</th></tr></thead>`;
+  gs.forEach((g,gi)=>{const parts=[];let tot=0;rl.forEach((r,k)=>{const a=stats[k][gi];if(a){tot+=a.length;parts.push(`<b>${esc(r.name)}</b>: ${rng(a)}`)}});
+   h+=`<tr><td>${lab(g)}</td><td>${tot}</td><td>${parts.join('; ')}</td></tr>`});
+  h+=`</table></div>`;
+  rl.forEach((r,k)=>{
+   const maxS=Math.max(...r.rows.map(x=>x.cells.length)),colw=Math.min(30,((land?297:210)-20)/(maxS+(r.rows.some(w=>w.L>0&&w.R>0)?0.6:0))-0.5),fs=Math.max(13,Math.min(22,colw*0.5));
+   const rowFs=Math.max(8,Math.min(fs,260/r.rows.length));
+   h+=`<div class="sheet pb ${L}">${head('Seat Planning',`Room no.: ${esc(rno(r.name))}`)}<div class="seat-layout" style="--fs:${rowFs.toFixed(1)}px;--w:${colw.toFixed(1)}mm">`;
+   r.rows.forEach(row=>{h+=`<div class="srow">`;
+    row.cells.forEach((c,j)=>{const gp=row.L>0&&row.R>0&&j===row.L?' aisle':'';
+     h+=c?`<div class="sc${gp}"><div class="t">${lab(gs[c.g])}</div><div class="v">${c.r}</div>${c.n?`<div class="nm">${esc(c.n.slice(0,16))}</div>`:''}</div>`
+         :`<div class="sc em${gp}"><div class="t">-</div><div class="v">-</div></div>`});
+    h+=`</div>`});
+   const ids=Object.keys(stats[k]).map(Number).sort((a,b)=>a-b);
+   h+=`</div><table class="st"><tr><th>Class</th><th>Roll no.</th><th>Total</th></tr>${ids.map(gi=>`<tr><td>${lab(gs[gi])}</td><td>${[...stats[k][gi]].sort((a,b)=>a-b).join(',')}</td><td>${stats[k][gi].length}</td></tr>`).join('')}
+   <tr><td colspan="2"><b>Total students</b></td><td><b>${r.cnt}</b></td></tr></table></div>`;
+  });
+ }
  $('out').innerHTML=h;
 }
 const norm=k=>String(k).toLowerCase().replace(/[^a-z]/g,'');
@@ -459,10 +522,10 @@ $('file').onchange=e=>{
  };
  rd.readAsArrayBuffer(f);
 };
-$('gen').onclick=()=>{generate();if(plan&&!$('msg').className)savePlan()};
-$('rescr').onclick=()=>{seed=Math.floor(Math.random()*1e9);generate();if(plan&&!$('msg').className)savePlan()};
+$('gen').onclick=()=>{generate();if(plan.length&&!$('msg').className)savePlan()};
+$('rescr').onclick=()=>{seed=Math.floor(Math.random()*1e9);generate();if(plan.length&&!$('msg').className)savePlan()};
 $('orient').onchange=render;
-$('print').onclick=()=>{generate();if(plan)window.print()};
+$('print').onclick=()=>{generate();if(plan.length)window.print()};
 // ---------- saved plans: cloud first, this device as the fallback
 const LS='seatplans_v1',FIELDS=['school','addr','exam','date','rows','lb','lp','rb','rp','start','prefix','orient','mix','rord'];
 let db=null,cloud=[],armed=null;
@@ -473,8 +536,15 @@ function snapshotPlan(){
  const topic=$('exam').value.trim()||'Seat plan',day=$('date').value||new Date().toISOString().slice(0,10);
  const slug=topic.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,40);
  const st={};FIELDS.forEach(f=>st[f]=$(f).value);st.scr=!!$('scr').checked;
+ const referenceTables=[...document.querySelectorAll('.school-index table')].map(table=>({
+  headings:[...table.querySelectorAll('thead th')].map(cell=>cell.textContent.trim()),
+  rows:[...table.querySelectorAll('tbody tr')].map(row=>[...row.cells].map(cell=>cell.textContent.trim()))
+ }));
  return {id:`p-${slug}-${day}-${hash(topic+'|'+day)}`,topic,regDate:day,savedAt:new Date().toISOString(),
-  students:total(),rooms:plan?plan.rl.length:rooms.length,st,seed,classes:JSON.parse(JSON.stringify(classes)),roomList:JSON.parse(JSON.stringify(rooms))};
+  students:total(),rooms:plan.reduce((sum,x)=>sum+x.rl.length,0)||rooms.length,
+  levels:plan.map(x=>({name:x.level,classes:[...new Set(x.gs.map(g=>`${g.c}${g.s?` ${g.s}`:''}`))],students:x.T,rooms:x.rl.map(r=>({name:r.name,students:r.cnt}))})),
+  referenceIndex:{capacityPerBench:3,primaryClasses:[2,3,4,5],secondaryClasses:[6,7,8,9,10],tables:referenceTables},
+  st,seed,classes:JSON.parse(JSON.stringify(classes)),roomList:JSON.parse(JSON.stringify(rooms))};
 }
 async function savePlan(){
  const rec=snapshotPlan(),keep=$('msg').textContent;let where='';
@@ -493,7 +563,7 @@ function allSaved(){
 function drawSaved(){
  const a=allSaved();
  $('svs').textContent=`Saved plans (${a.length})`;
- $('saved').innerHTML=a.length?a.map(x=>`<div class="svi"><div><b>${esc(x.topic)}</b> | ${esc(x.regDate)}<small>${x.students} students, ${x.rooms} rooms | ${esc(x.where)} | saved ${esc(new Date(x.savedAt).toLocaleString())}</small></div>
+ $('saved').innerHTML=a.length?a.map(x=>`<div class="svi"><div><b>${esc(x.topic)}</b> | ${esc(x.regDate)}<small>${x.students} students, ${x.rooms} rooms${x.levels&&x.levels.length?` | ${x.levels.map(level=>`${esc(level.name)} ${level.students} students`).join(', ')}`:''}${x.referenceIndex?' | Reference index saved':''} | ${esc(x.where)} | saved ${esc(new Date(x.savedAt).toLocaleString())}</small></div>
   <button type="button" data-open="${esc(x.id)}">Open</button><button type="button" data-sdel="${esc(x.id)}">${armed===x.id?'Sure?':'Delete'}</button></div>`).join(''):'<p class="sub">Nothing saved yet. Plans are saved when you press Make seating plan, under the exam name and date.</p>';
 }
 function openPlan(x){
