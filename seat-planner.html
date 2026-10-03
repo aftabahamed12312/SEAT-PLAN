@@ -143,7 +143,7 @@ th,td{border:1px solid #333;padding:3px 6px;text-align:left;vertical-align:top}t
     </div>
     <div>
      <h3>Room bench index</h3>
-     <label for="referenceCapacity">Students per bench</label><input id="referenceCapacity" type="number" min="1" max="3" step="1" value="3">
+     <label for="referenceCapacity">Students per bench</label><input id="referenceCapacity" type="number" min="1" step="1" value="3">
      <table><thead><tr><th>Room</th><th>Benches</th><th>Capacity</th></tr></thead><tbody id="referenceRooms"></tbody></table>
      <div class="btns index-actions"><button type="button" id="applyReferenceRooms">Apply reference rooms to planner</button></div>
      <p class="sub">Edit bench counts or students per bench, then apply these values as the planner's room list.</p>
@@ -174,11 +174,11 @@ th,td{border:1px solid #333;padding:3px 6px;text-align:left;vertical-align:top}t
   <div class="row2"><div><label for="rows">Rows</label><input id="rows" type="number" min="1" max="30" value="4"></div><div></div></div>
   <div class="row2">
    <div><label for="lb">Left side: benches</label><input id="lb" type="number" min="0" max="12" value="2"></div>
-   <div><label for="lp">Left: students per bench</label><input id="lp" type="number" min="1" max="3" value="2"></div>
+   <div><label for="lp">Left: students per bench</label><input id="lp" type="number" min="1" step="1" value="2"></div>
   </div>
   <div class="row2">
    <div><label for="rb">Right side: benches</label><input id="rb" type="number" min="0" max="12" value="2"></div>
-   <div><label for="rp">Right: students per bench</label><input id="rp" type="number" min="1" max="3" value="2"></div>
+   <div><label for="rp">Right: students per bench</label><input id="rp" type="number" min="1" step="1" value="2"></div>
   </div>
   <div class="btns">
    <button id="applydef" type="button">Apply this size to all rooms</button>
@@ -221,7 +221,7 @@ function saveReferenceValues(){
 function loadReferenceValues(){
  try{
   const saved=JSON.parse(localStorage.getItem(REFERENCE_KEY)||'null');
-  if(saved&&Number.isInteger(saved.capacity)&&saved.capacity>=1&&saved.capacity<=3&&Array.isArray(saved.benches)&&saved.benches.length===referenceRoomBenches.length&&saved.benches.every(x=>Number.isInteger(x)&&x>=1&&x<=60)){
+  if(saved&&Number.isSafeInteger(saved.capacity)&&saved.capacity>=1&&Array.isArray(saved.benches)&&saved.benches.length===referenceRoomBenches.length&&saved.benches.every(x=>Number.isInteger(x)&&x>=1&&x<=60)){
    referenceCapacity=saved.capacity;referenceRoomBenches=saved.benches;
   }
  }catch(err){$('referenceMsg').textContent=`Could not load saved reference values: ${err.message}`}
@@ -251,9 +251,10 @@ const rcap=x=>x.lb*x.lp+x.rb*x.rp;
 const rowCaps=m=>Array.from({length:Math.max(0,m.r)},(_,i)=>rcap(rcfg(m,i)));
 const cap=m=>rowCaps(m).reduce((a,b)=>a+b,0);
 const clamp=(v,a,b)=>Math.min(b,Math.max(a,Math.round(+v)||a));
+const seatValue=v=>Math.min(Number.MAX_SAFE_INTEGER,Math.max(1,Math.round(+v)||1));
 function say(t,err){$('msg').textContent=t;$('msg').className=err?'err':''}
 const total=()=>flat().reduce((a,g)=>a+(g.c.trim()?(g.rolls?g.rolls.length:Math.max(0,g.n||0)):0),0);
-const defCap=()=>clamp($('rows').value,1,30)*(clamp($('lb').value,0,12)*clamp($('lp').value,1,3)+clamp($('rb').value,0,12)*clamp($('rp').value,1,3));
+const defCap=()=>clamp($('rows').value,1,30)*(clamp($('lb').value,0,12)*seatValue($('lp').value)+clamp($('rb').value,0,12)*seatValue($('rp').value));
 function info(){
  const T=total(),S=rooms.reduce((a,m)=>a+cap(m),0),d=defCap(),el=$('info');
  el.className=S<T?'err':'';
@@ -261,14 +262,14 @@ function info(){
 }
 function newRoom(){
  const last=rooms[rooms.length-1],mt=last&&last.name.match(/(\d+)\s*$/),num=mt?+mt[1]+1:(+$('start').value||0)+rooms.length;
- return {name:`${$('prefix').value.trim()} ${num}`.trim(),r:clamp($('rows').value,1,30),lb:clamp($('lb').value,0,12),lp:clamp($('lp').value,1,3),rb:clamp($('rb').value,0,12),rp:clamp($('rp').value,1,3)};
+ return {name:`${$('prefix').value.trim()} ${num}`.trim(),r:clamp($('rows').value,1,30),lb:clamp($('lb').value,0,12),lp:seatValue($('lp').value),rb:clamp($('rb').value,0,12),rp:seatValue($('rp').value)};
 }
 function setCount(n){n=clamp(n,1,500);while(rooms.length<n)rooms.push(newRoom());rooms.length=n;$('nrooms').value=n;drawRooms()}
 const edHtml=(m,j)=>`<div class="ed" id="ed${j}"><div class="sub" style="font-size:12px;margin-bottom:4px">Each row: benches and students per bench, left side then right side</div>
  <div class="edr hd"><span>Row</span><span>L benches</span><span>L per bench</span><span>R benches</span><span>R per bench</span><span>Seats</span></div>`+
- m.rc.slice(0,m.r).map((x,i)=>`<div class="edr"><span>Row ${i+1}</span>${['lb','lp','rb','rp'].map(f=>`<input data-j="${j}" data-row="${i}" data-f="${f}" type="number" min="0" max="${f[1]==='b'?12:3}" value="${x[f]}" aria-label="Row ${i+1} ${f}">`).join('')}<span id="rs${j}_${i}">${rcap(x)}</span></div>`).join('')+
+ m.rc.slice(0,m.r).map((x,i)=>`<div class="edr"><span>Row ${i+1}</span>${['lb','lp','rb','rp'].map(f=>`<input data-j="${j}" data-row="${i}" data-f="${f}" type="number" min="${f[1]==='b'?0:1}" ${f[1]==='b'?'max="12"':''} step="1" value="${x[f]}" aria-label="Row ${i+1} ${f}">`).join('')}<span id="rs${j}_${i}">${rcap(x)}</span></div>`).join('')+
  `<button type="button" data-rst="${j}">Make all rows equal again</button></div>`;
-const sideHtml=(m,i,t,b,p)=>`<div class="side"><b>${t}</b><input data-j="${i}" data-f="${b}" type="number" min="0" max="12" value="${m[b]}" aria-label="${t} benches"><span>benches ×</span><input data-j="${i}" data-f="${p}" type="number" min="1" max="3" value="${m[p]}" aria-label="${t} students per bench"><span>students</span></div>`;
+const sideHtml=(m,i,t,b,p)=>`<div class="side"><b>${t}</b><input data-j="${i}" data-f="${b}" type="number" min="0" max="12" value="${m[b]}" aria-label="${t} benches"><span>benches ×</span><input data-j="${i}" data-f="${p}" type="number" min="1" step="1" value="${m[p]}" aria-label="${t} students per bench"><span>students</span></div>`;
 function drawRooms(){
  $('rooms').innerHTML=rooms.map((m,i)=>`<div class="rm"><input data-j="${i}" data-f="name" value="${esc(m.name)}" aria-label="Room name">
  <input data-j="${i}" data-f="r" type="number" min="1" max="30" value="${m.r}" aria-label="Rows">
@@ -276,7 +277,7 @@ function drawRooms(){
  ${sideHtml(m,i,'Left','lb','lp')}${sideHtml(m,i,'Right','rb','rp')}${m.open&&m.rc?edHtml(m,i):''}</div>`).join('');
  info();
 }
-$('rooms').addEventListener('input',e=>{const t=e.target,f=t.dataset.f;if(!f)return;const j=+t.dataset.j,m=rooms[j],v=Math.max(0,Math.round(+t.value)||0);
+$('rooms').addEventListener('input',e=>{const t=e.target,f=t.dataset.f;if(!f)return;const j=+t.dataset.j,m=rooms[j],v=f==='lp'||f==='rp'?seatValue(t.value):Math.max(0,Math.round(+t.value)||0);
  if(f==='name')m.name=t.value;
  else if(t.dataset.row!==undefined){const x=m.rc[+t.dataset.row];x[f]=v;const sp=$(`rs${j}_${t.dataset.row}`);if(sp)sp.textContent=rcap(x)}
  else{m[f]=v;if(m.rc){if(f==='r'){while(m.rc.length<m.r)m.rc.push({lb:m.lb,lp:m.lp,rb:m.rb,rp:m.rp});m.rc.length=m.r}else m.rc.forEach(x=>{x[f]=v});
@@ -311,7 +312,7 @@ document.querySelector('.school-index').addEventListener('change',e=>{
  const t=e.target;
  if(t.id==='referenceCapacity'){
   const value=Number(t.value);
-  if(!Number.isInteger(value)||value<1||value>3){drawReferenceRooms();$('referenceMsg').textContent='Students per bench must be a whole number from 1 to 3.';return}
+  if(!Number.isSafeInteger(value)||value<1){drawReferenceRooms();$('referenceMsg').textContent='Students per bench must be a positive whole number.';return}
   referenceCapacity=value;
  }else if(t.dataset.referenceRoom!==undefined){
   const index=Number(t.dataset.referenceRoom),value=Number(t.value);
@@ -608,8 +609,8 @@ function drawSaved(){
 }
 function openPlan(x){
  FIELDS.forEach(f=>{if(x.st[f]!==undefined)$(f).value=x.st[f]});$('scr').checked=!!x.st.scr;
- if(x.referenceIndex&&Number.isInteger(x.referenceIndex.capacityPerBench)&&Array.isArray(x.referenceIndex.roomBenches)&&x.referenceIndex.roomBenches.length===referenceRoomBenches.length&&x.referenceIndex.roomBenches.every(n=>Number.isInteger(n)&&n>=1&&n<=60)){
-  referenceCapacity=Math.min(3,Math.max(1,x.referenceIndex.capacityPerBench));referenceRoomBenches=[...x.referenceIndex.roomBenches];drawReferenceRooms();saveReferenceValues();
+ if(x.referenceIndex&&Number.isSafeInteger(x.referenceIndex.capacityPerBench)&&x.referenceIndex.capacityPerBench>=1&&Array.isArray(x.referenceIndex.roomBenches)&&x.referenceIndex.roomBenches.length===referenceRoomBenches.length&&x.referenceIndex.roomBenches.every(n=>Number.isInteger(n)&&n>=1&&n<=60)){
+  referenceCapacity=x.referenceIndex.capacityPerBench;referenceRoomBenches=[...x.referenceIndex.roomBenches];drawReferenceRooms();saveReferenceValues();
  }
  seed=x.seed;classes=x.classes;rooms=x.roomList;$('nrooms').value=rooms.length;
  drawGroups();drawRooms();generate();
