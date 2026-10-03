@@ -347,13 +347,16 @@ function generate(save=true){
  if(bad){say(`Room "${bad.name||'unnamed'}" needs at least 1 row, 1 bench and 1 seat per bench. Fix or remove it.`,1);return}
  const mix=$('mix').value==='mix';
  const classOrder=[...new Map(gs.map(g=>[g.c.trim().toLowerCase(),g.c.trim()])).values()];
- const orderedGroups=mix?classOrder.flatMap(cls=>gs.map((g,i)=>({g,i})).filter(x=>x.g.c.trim().toLowerCase()===cls.toLowerCase())):gs.map((g,i)=>({g,i}));
+ const classGroups=classOrder.map(cls=>gs.map((g,i)=>({g,i})).filter(x=>x.g.c.trim().toLowerCase()===cls.toLowerCase()));
+ const orderedGroups=mix?Array.from({length:Math.max(...classGroups.map(x=>x.length))},(_,sectionIndex)=>classGroups.flatMap(sections=>sections[sectionIndex]?[sections[sectionIndex]]:[])).flat():gs.map((g,i)=>({g,i}));
  const q=orderedGroups.map(({g,i})=>({i,rolls:g.rolls?g.rolls.slice():Array.from({length:g.n},(_,k)=>k+1)}));
  let groupCursor=0;
- const nextQueue=mix?()=>{
+ const nextQueue=mix?(excludeClass='')=>{
   for(let offset=0;offset<q.length;offset++){
-   const index=(groupCursor+offset)%q.length;
-   if(q[index].rolls.length){groupCursor=(index+1)%q.length;return q[index]}
+   const index=(groupCursor+offset)%q.length,item=q[index];
+   if(!item.rolls.length||excludeClass&&gs[item.i].c.trim().toLowerCase()===excludeClass)continue;
+   groupCursor=(index+1)%q.length;
+   return item;
   }
   return null;
  }:()=>q.find(x=>x.rolls.length)||null;
@@ -371,10 +374,14 @@ function generate(save=true){
   const placeRow=(c,i,prev,side,sideRow)=>{
    if((left<=0&&!m.split)||c<1)return null;
    const cells=Array(c).fill(null);
+   const benchSize=m.rc?m.rc[i].p:m.p;
    for(let j=0;j<c&&left>0;j++){
-    const pick=nextQueue();
-    if(!pick)break;
     const seatIndex=(sideRow??i+1)%2===0?c-1-j:j;
+    const benchStart=Math.floor(seatIndex/benchSize)*benchSize;
+    const benchClass=mix?cells.slice(benchStart,benchStart+benchSize).find(Boolean):null;
+    const excludeClass=benchClass?gs[benchClass.g].c.trim().toLowerCase():'';
+    const pick=nextQueue(excludeClass);
+    if(!pick)break;
     const roll=pick.rolls.shift();cells[seatIndex]={g:pick.i,r:roll,n:(gs[pick.i].names||{})[roll]||''};left--;
    }
    const row={cells,p:m.rc?m.rc[i].p:m.p,b:m.rc?m.rc[i].b:m.b,idx:i+1,side,sideRow};rows.push(row);return row;
@@ -391,6 +398,8 @@ function generate(save=true){
   }
   rl.push({name:m.name||`Room ${k+1}`,rows,cnt:cnt[k],aisle:m.aisle||0,split:!!m.split,totalRows:m.r,capacity:cap(m)});
  });
+ const unseated=q.reduce((sum,item)=>sum+item.rolls.length,0);
+ if(unseated){say(`${unseated} students cannot be seated without putting the same class on one bench. Add room capacity or adjust the class distribution.`,1);return}
  plan={gs,rl,T};
  render();
  const unused=rooms.length-rl.length;
