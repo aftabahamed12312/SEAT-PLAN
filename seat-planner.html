@@ -44,6 +44,13 @@ button.pri{background:var(--acc);color:var(--accfg);border-color:var(--acc);font
 .preview{overflow:auto}
 details.sv{margin:10px 0;border:1px solid var(--line);border-radius:8px;padding:8px}details.sv summary{cursor:pointer;font-weight:700}
 .svi{display:grid;grid-template-columns:1fr auto auto;gap:6px;align-items:center;padding:6px 0;border-top:1px solid var(--line);font-size:14px}.svi:first-child{border-top:0}
+.school-index{margin:10px 0;border:1px solid var(--line);border-radius:8px;padding:8px}
+.school-index summary{cursor:pointer;font-weight:700}
+.index-tables{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-top:8px}
+.index-tables h3{font-size:15px;margin:8px 0 4px}
+.index-tables table{margin:0;background:var(--panel);color:var(--ink)}
+.index-tables th{background:var(--bg)}
+.index-tables td,.index-tables th{padding:4px 6px}
 .svi small{display:block;color:var(--mute)}
 .sheet{background:#fff;color:#111;margin:0 auto 16px;border:1px solid var(--line);padding:10mm;font-family:"Atkinson Hyperlegible",Arial,sans-serif;width:210mm;min-height:297mm}
 .sheet.land{width:297mm;min-height:210mm}
@@ -99,6 +106,72 @@ th,td{border:1px solid #333;padding:3px 6px;text-align:left;vertical-align:top}t
   <h1>Seat Planner</h1>
   <p class="sub">Enter classes and rooms. Every room can be edited. Students are shared across rooms by room capacity.</p>
   <details class="sv" id="svd"><summary id="svs">Saved plans</summary><div id="saved"></div></details>
+  <details class="school-index">
+   <summary>School seating index (reference data)</summary>
+   <div class="index-tables">
+    <div>
+     <h3>Class totals and seating capacity</h3>
+     <table><thead><tr><th>Class</th><th>Students</th><th>Benches</th><th>Capacity</th></tr></thead><tbody>
+      <tr><td>2R</td><td>33</td><td>9</td><td>27</td></tr>
+      <tr><td>2L</td><td>30</td><td>9</td><td>27</td></tr>
+      <tr><td>2T</td><td>31</td><td>8</td><td>24</td></tr>
+      <tr><td>2M</td><td>30</td><td>8</td><td>24</td></tr>
+      <tr><td>3R</td><td>26</td><td>8</td><td>24</td></tr>
+      <tr><td>3L</td><td>28</td><td>8</td><td>24</td></tr>
+      <tr><td>3M</td><td>24</td><td>8</td><td>24</td></tr>
+      <tr><td>3T</td><td>27</td><td>8</td><td>24</td></tr>
+      <tr><td>4R</td><td>36</td><td>10</td><td>30</td></tr>
+      <tr><td>4L</td><td>35</td><td>11</td><td>33</td></tr>
+      <tr><td>4M</td><td>38</td><td>11</td><td>33</td></tr>
+      <tr><td>5R</td><td>32</td><td>11</td><td>33</td></tr>
+      <tr><td>5L</td><td>32</td><td>11</td><td>33</td></tr>
+      <tr><td>5M</td><td>33</td><td>11</td><td>33</td></tr>
+      <tr><td>6R</td><td>31</td><td>12</td><td>36</td></tr>
+      <tr><td>6L</td><td>31</td><td>11</td><td>33</td></tr>
+      <tr><td>7R</td><td>36</td><td>11</td><td>33</td></tr>
+      <tr><td>7L</td><td>27</td><td>10</td><td>30</td></tr>
+      <tr><td>7M</td><td>27</td><td>9</td><td>27</td></tr>
+      <tr><td>8R</td><td>35</td><td>11</td><td>33</td></tr>
+      <tr><td>8L</td><td>34</td><td>11</td><td>33</td></tr>
+      <tr><td>8M</td><td>35</td><td>11</td><td>33</td></tr>
+      <tr><td>9R</td><td>32</td><td>11</td><td>33</td></tr>
+      <tr><td>9L</td><td>32</td><td>11</td><td>33</td></tr>
+      <tr><td>10</td><td>33</td><td>10</td><td>30</td></tr>
+     </tbody></table>
+    </div>
+    <div>
+     <h3>Room bench index (3 students per bench)</h3>
+     <table><thead><tr><th>Room</th><th>Benches</th><th>Capacity</th></tr></thead><tbody>
+      <tr><td>1</td><td>9</td><td>27</td></tr>
+      <tr><td>2</td><td>9</td><td>27</td></tr>
+      <tr><td>3</td><td>8</td><td>24</td></tr>
+      <tr><td>4</td><td>8</td><td>24</td></tr>
+      <tr><td>5</td><td>8</td><td>24</td></tr>
+      <tr><td>6</td><td>8</td><td>24</td></tr>
+      <tr><td>7</td><td>8</td><td>24</td></tr>
+      <tr><td>8</td><td>8</td><td>24</td></tr>
+      <tr><td>9</td><td>10</td><td>30</td></tr>
+      <tr><td>10</td><td>11</td><td>33</td></tr>
+      <tr><td>11</td><td>11</td><td>33</td></tr>
+      <tr><td>12</td><td>11</td><td>33</td></tr>
+      <tr><td>13</td><td>11</td><td>33</td></tr>
+      <tr><td>14</td><td>11</td><td>33</td></tr>
+      <tr><td>15</td><td>12</td><td>36</td></tr>
+      <tr><td>16</td><td>11</td><td>33</td></tr>
+      <tr><td>17</td><td>11</td><td>33</td></tr>
+      <tr><td>18</td><td>10</td><td>30</td></tr>
+      <tr><td>19</td><td>9</td><td>27</td></tr>
+      <tr><td>20</td><td>11</td><td>33</td></tr>
+      <tr><td>21</td><td>11</td><td>33</td></tr>
+      <tr><td>22</td><td>11</td><td>33</td></tr>
+      <tr><td>23</td><td>11</td><td>33</td></tr>
+      <tr><td>24</td><td>11</td><td>33</td></tr>
+      <tr><td>25</td><td>10</td><td>30</td></tr>
+     </tbody></table>
+    </div>
+   </div>
+   <p class="sub">Reference figures transcribed from the supplied notebook photo. Capacity is 3 students per bench.</p>
+  </details>
   <h2>School and exam</h2>
   <label for="school">School name</label><input id="school" value="Tinau English Boarding Secondary School">
   <label for="addr">Address</label><input id="addr" value="Butwal -11, Devinagar">
