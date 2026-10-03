@@ -138,7 +138,7 @@ th,td{border:1px solid #333;padding:3px 6px;text-align:left;vertical-align:top}t
   <h2>Print</h2>
   <div class="row2">
    <div><label for="orient">Paper</label><select id="orient"><option value="portrait">A4 portrait</option><option value="landscape">A4 landscape</option></select></div>
-   <div><label for="mix">Arrangement</label><select id="mix"><option value="mix">Mix classes (pictured 4-class pattern)</option><option value="seq">In roll order</option></select></div>
+   <div><label for="mix">Arrangement</label><select id="mix"><option value="mix">Mix classes (keep sections in order)</option><option value="seq">In roll order</option></select></div>
   </div>
   <div class="btns">
    <button class="pri" id="gen" type="button">Make seating plan</button>
@@ -365,7 +365,7 @@ function generate(save=true){
    const availableFor=cls=>available.filter(x=>sameClass(x,cls));
    for(let offset=0;offset<classOrder.length;offset++){
     const cls=classOrder[(preferred+offset)%classOrder.length],pool=availableFor(cls);
-    if(pool.length)return pool.reduce((a,b)=>b.rolls.length>a.rolls.length?b:a);
+    if(pool.length)return pool[0];
    }
    return null;
   };
@@ -383,7 +383,7 @@ function generate(save=true){
      const down=up?pool.filter(x=>sameClass(up,x)):[];
      const side=pool.filter(x=>!(lf&&sameClass(lf,x)));
      const use=down.length?down:side.length?side:pool;
-     pick=use.reduce((a,b)=>b.rolls.length>a.rolls.length?b:a);
+     pick=use[0];
     }
     else pick=pool[0];
     if(!pick)break;
