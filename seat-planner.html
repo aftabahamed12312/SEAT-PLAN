@@ -358,6 +358,22 @@ function generate(save=true){
   const rows=[];let left=cnt[k];
   const caps=rowCaps(m);
   const classOrder=[...new Map(gs.map(g=>[g.c.trim().toLowerCase(),g.c])).values()];
+  let classCursor=0;
+  const chooseMixedClass=(leftCell,upCell)=>{
+   const available=q.filter(x=>x.rolls.length);
+   const classOf=cell=>gs[cell.g].c.trim().toLowerCase();
+   for(let pass=0;pass<2;pass++){
+    for(let offset=0;offset<classOrder.length;offset++){
+     const index=(classCursor+offset)%classOrder.length,cls=classOrder[index].trim().toLowerCase();
+     const candidate=available.find(x=>gs[x.i].c.trim().toLowerCase()===cls);
+     if(!candidate)continue;
+     if(pass===0&&((leftCell&&classOf(leftCell)===cls)||(upCell&&classOf(upCell)===cls)))continue;
+     classCursor=(index+1)%classOrder.length;
+     return candidate;
+    }
+   }
+   return null;
+  };
   const chooseClass=preferred=>{
    const available=q.filter(x=>x.rolls.length);
    if(!available.length)return null;
@@ -379,11 +395,7 @@ function generate(save=true){
      const order=side===1||((sideRow-1)%4===3)?[2,3,0,1]:[0,1,2,3];
      pick=chooseClass(order[j%order.length]);
     }else if(mix){
-     const sameClass=(cell,candidate)=>gs[cell.g].c.trim().toLowerCase()===gs[candidate.i].c.trim().toLowerCase();
-     const down=up?pool.filter(x=>sameClass(up,x)):[];
-     const side=pool.filter(x=>!(lf&&sameClass(lf,x)));
-     const use=down.length?down:side.length?side:pool;
-     pick=use[0];
+     pick=chooseMixedClass(lf,up);
     }
     else pick=pool[0];
     if(!pick)break;
