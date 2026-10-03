@@ -12,7 +12,7 @@ box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:en
 :root[data-theme="dark"]{--bg:#141a18;--panel:#1d2623;--ink:#e8eee9;--mute:#9aa8a2;--line:#33403b;--acc:#5fb28f;--accfg:#10201a}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 "Atkinson Hyperlegible",system-ui,Arial,sans-serif}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 "Atkinson Hyperlegible",time}
 .app{display:grid;grid-template-columns:450px 1fr;gap:16px;max-width:1400px;margin:0 auto;padding:16px}
 @media(max-width:900px){.app{grid-template-columns:1fr}}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px}
@@ -24,12 +24,14 @@ input:focus-visible,select:focus-visible,button:focus-visible{outline:3px solid 
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
 .grp{display:grid;grid-template-columns:1fr 1fr 1.2fr auto;gap:6px;align-items:end;margin-bottom:6px}
 .grp label{margin:0 0 2px;font-size:12px}
-.rhead,.rm{display:grid;grid-template-columns:1.4fr .7fr .8fr .9fr .6fr auto auto;gap:5px;align-items:center;margin-bottom:5px}
-.checkline{display:flex;align-items:center;gap:5px;font-size:13px;color:var(--ink);margin:4px 0}
-.checkline input{width:auto;margin:0}
+.rm{display:grid;grid-template-columns:1fr 62px 46px auto auto;gap:5px;align-items:center;border:1px solid var(--line);border-radius:8px;padding:8px;margin-bottom:8px}
+.side{grid-column:1/-1;display:grid;grid-template-columns:44px 1fr auto 1fr auto;gap:5px;align-items:center;font-size:13px;color:var(--mute)}
+.cls{border:1px solid var(--line);border-radius:8px;padding:8px;margin-bottom:8px}.cls label{margin:0 0 2px;font-size:12px}
+.ch{display:grid;grid-template-columns:1fr auto;gap:6px;align-items:end;margin-bottom:6px}
+.sec{display:grid;grid-template-columns:1fr 1fr auto;gap:6px;align-items:end;margin-bottom:5px}
 .ed{grid-column:1/-1;border:1px solid var(--line);border-radius:6px;padding:8px;margin-bottom:4px}
 .edh{margin-bottom:6px}.edh label{margin:0 0 2px;font-size:12px}
-.edr{display:grid;grid-template-columns:.8fr 1fr 1fr .6fr;gap:5px;align-items:center;margin-bottom:4px;font-size:14px}.edr.hd{font-size:12px;color:var(--mute)}
+.edr{display:grid;grid-template-columns:.7fr repeat(4,1fr) .6fr;gap:5px;align-items:center;margin-bottom:4px;font-size:14px}.edr.hd{font-size:12px;color:var(--mute)}
 .ed button{margin-top:4px;font-size:13px;padding:5px 9px}
 .rhead{font-size:12px;color:var(--mute);position:sticky;top:0;background:var(--panel)}
 .rm input{padding:5px 6px}.rm .cp{text-align:center;font-weight:700}
@@ -40,6 +42,9 @@ button.pri{background:var(--acc);color:var(--accfg);border-color:var(--acc);font
 #info{margin:8px 0;font-size:14px;font-weight:700}#info.err,#msg.err{color:#b3261e}
 #msg{margin-top:10px;font-size:14px;color:var(--mute)}
 .preview{overflow:auto}
+details.sv{margin:10px 0;border:1px solid var(--line);border-radius:8px;padding:8px}details.sv summary{cursor:pointer;font-weight:700}
+.svi{display:grid;grid-template-columns:1fr auto auto;gap:6px;align-items:center;padding:6px 0;border-top:1px solid var(--line);font-size:14px}.svi:first-child{border-top:0}
+.svi small{display:block;color:var(--mute)}
 .sheet{background:#fff;color:#111;margin:0 auto 16px;border:1px solid var(--line);padding:10mm;font-family:"Atkinson Hyperlegible",Arial,sans-serif;width:210mm;min-height:297mm}
 .sheet.land{width:297mm;min-height:210mm}
 .sheet h3{margin:0;font-size:20px;text-align:center}
@@ -51,8 +56,15 @@ button.pri{background:var(--acc);color:var(--accfg);border-color:var(--acc);font
 .cell b{font-size:var(--fs,16px)}.cell small{font-size:10px}.cell i{font-style:normal;font-size:8px;color:#555}
 .cell.empty{border-style:dashed;border-color:#aaa}
 .gap{margin-left:10px}.cell.aisle{margin-left:28px}
-.srow{display:flex;gap:4px;justify-content:center;margin-bottom:4px}.srow .cell{width:var(--w);flex:none}
-.sides{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8mm}.side{min-width:0}.side-title{text-align:center;font-weight:700;font-size:11px;margin:0 0 5px}
+.sheet{font-family:"Times New Roman",Times,serif}
+.hd{text-align:center;line-height:1.4}.hd div{font-size:18px}.hd .sn{font-size:23px;font-weight:700}.hd .ex,.hd .sp{font-size:20px;font-weight:700}.hd .sp{text-decoration:underline}
+.rn{display:flex;justify-content:space-between;font-size:18px;margin:6px 0 16px;min-height:22px}
+.srow{display:flex;justify-content:center;margin-bottom:16px}
+.sc{width:var(--w);flex:none;border:1px solid #999;text-align:center;font-size:var(--fs)}.sc+.sc{border-left:0}
+.sc .t{font-weight:700;border-bottom:1px solid #999;padding:2px 0}.sc .v{padding:4px 0}.sc .nm{font-size:10px;padding-bottom:2px;line-height:1}
+.sc.aisle{border-left:1px solid #999;margin-left:calc(var(--w)*0.6)}
+.sc.em{border-style:dashed;color:transparent}
+.st{width:70%;margin-top:34px;font-size:16px}.st th,.st td{border:1px solid #000;padding:2px 6px;background:none}.st th{text-align:center}.st td:last-child,.st td[colspan]{text-align:center}
 .legend{display:flex;gap:6px 14px;flex-wrap:wrap;margin-top:12px;font-size:12px}
 .legend span{display:inline-flex;gap:5px;align-items:flex-start}.legend em{width:12px;height:12px;border:1px solid #111;display:inline-block;flex:none;margin-top:2px}
 table{width:100%;border-collapse:collapse;font-size:12px;margin-top:4px}
@@ -60,37 +72,12 @@ thead{display:table-header-group}tr{break-inside:avoid;page-break-inside:avoid}
 th,td{border:1px solid #333;padding:3px 6px;text-align:left;vertical-align:top}th{background:#e8ece9}
 .pb{page-break-before:always;break-before:page}
 .foot{margin-top:18px;display:flex;justify-content:space-between;font-size:12px;gap:12px}
-.print-head{text-align:center;font-family:"Times New Roman",Times,serif;line-height:1.25;margin-bottom:3mm;flex:0 0 auto}
-.print-head h3{font-size:19pt;font-weight:700;margin:0}
-.print-head .location{font-size:15pt;margin-top:1mm}
-.print-head .exam{font-size:17pt;font-weight:700;margin-top:2mm}
-.print-head .title{font-size:17pt;font-weight:700;text-decoration:underline;margin-top:2mm}
-.print-head .room{font-size:15pt;font-weight:700;text-align:right;margin-top:2mm}
-.print-room-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:14mm;row-gap:8mm;margin-bottom:3mm}
-.print-room-grid.single{grid-template-columns:1fr}
-.print-bank{min-width:0;display:flex;flex-direction:column;justify-content:space-between;gap:2mm}
-.print-bank-row{display:grid;gap:0;flex:1;min-height:0;break-inside:avoid}
-.print-seat{min-width:0;min-height:0;border:1px solid #999;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-family:"Times New Roman",Times,serif;line-height:1.05;padding:.5mm}
-.print-seat.bench-gap{margin-left:2.5mm}
-.print-seat strong{font-size:var(--seat-class-size,16pt)}
-.print-seat span{font-size:var(--seat-roll-size,18pt)}
-.print-seat.empty{color:transparent}
-.print-summary{width:70%;font-family:"Times New Roman",Times,serif;font-size:13pt;flex:0 0 auto;margin-top:auto}
-.print-summary th,.print-summary td{border:1px solid #111;padding:1.7mm 2mm;text-align:center;vertical-align:middle}
-.print-summary th{font-weight:700;background:#fff}
-.print-summary td.rolls{text-align:left}
-.print-summary tfoot td{font-weight:700}
 @media print{
- body{background:#fff;color:#000}.app{display:block;padding:0;max-width:none}.panel.ctl{display:none}
+ body{background:#fff}.app{display:block;padding:0;max-width:none}.panel.ctl{display:none}
  .panel.pv{border:0;padding:0;background:none}.preview{overflow:visible}
- .sheet{box-sizing:border-box;border:1px solid #111;margin:0;width:auto!important;height:277mm!important;min-height:277mm!important;padding:5mm;display:flex;flex-direction:column;overflow:hidden;page-break-after:always;break-after:page}
- .sheet:last-child{page-break-after:auto;break-after:auto}
- .print-head,.print-room-grid,.print-bank,.print-seat,.print-summary,.print-summary th,.print-summary td{background:#fff!important;color:#000!important;box-shadow:none!important}
- .print-room-grid{column-gap:14mm;row-gap:8mm;flex:1;min-height:0}
- .print-bank-row{margin:0;min-height:0}
- .print-summary{margin-top:auto}
- .print-seat{border-color:#999}
- *{-webkit-print-color-adjust:economy!important;print-color-adjust:economy!important}
+ .sheet{border:0;margin:0;width:auto!important;min-height:0!important;padding:0}
+ .sheet.first{page-break-before:avoid}
+ *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
 }
 </style>
 <style id="pg">@page{size:A4 portrait;margin:10mm}</style>
@@ -100,10 +87,11 @@ th,td{border:1px solid #333;padding:3px 6px;text-align:left;vertical-align:top}t
  <div class="panel ctl">
   <h1>Seat Planner</h1>
   <p class="sub">Enter classes and rooms. Every room can be edited. Students are shared across rooms by room capacity.</p>
+  <details class="sv" id="svd"><summary id="svs">Saved plans</summary><div id="saved"></div></details>
   <h2>School and exam</h2>
-  <label for="school">School name</label><input id="school" value="Your School Name">
-   <label for="location">School location (optional)</label><input id="location" value="">
-  <div class="row2"><div><label for="exam">Exam</label><input id="exam" value="Terminal Examination"></div>
+  <label for="school">School name</label><input id="school" value="Tinau English Boarding Secondary School">
+  <label for="addr">Address</label><input id="addr" value="Butwal -11, Devinagar">
+  <div class="row2"><div><label for="exam">Exam</label><input id="exam" value="First Assessment Test -2083"></div>
   <div><label for="date">Date</label><input id="date" type="date"></div></div>
   <h2>Classes</h2>
   <div id="groups"></div>
@@ -116,32 +104,35 @@ th,td{border:1px solid #333;padding:3px 6px;text-align:left;vertical-align:top}t
    <div><label for="start">First room number</label><input id="start" type="number" min="0" value="101"></div>
   </div>
   <label for="prefix">Room label</label><input id="prefix" value="Room">
-  <p class="sub" style="margin-top:8px">Size for new rooms (total rows × benches × seats per bench). Turn on Two sides to split the total evenly; 13 rows becomes 6 on one side and 7 on the other. Seats = rows × benches per row × seats per bench.</p>
-  <div class="row3">
-   <div><label for="rows">Total rows</label><input id="rows" type="number" min="1" max="30" step="1" value="6"><label class="checkline"><input id="twoSides" type="checkbox"> Two sides</label></div>
-   <div><label for="benches">Benches</label><input id="benches" type="number" min="1" max="12" value="4"></div>
-   <div><label for="per">Seats/bench</label><input id="per" type="number" min="1" max="3" value="2"></div>
+  <p class="sub" style="margin-top:8px">Size for new rooms: rows, then benches and students per bench for each side</p>
+  <div class="row2"><div><label for="rows">Rows</label><input id="rows" type="number" min="1" max="30" value="4"></div><div></div></div>
+  <div class="row2">
+   <div><label for="lb">Left side: benches</label><input id="lb" type="number" min="0" max="12" value="2"></div>
+   <div><label for="lp">Left: students per bench</label><input id="lp" type="number" min="1" max="3" value="2"></div>
+  </div>
+  <div class="row2">
+   <div><label for="rb">Right side: benches</label><input id="rb" type="number" min="0" max="12" value="2"></div>
+   <div><label for="rp">Right: students per bench</label><input id="rp" type="number" min="1" max="3" value="2"></div>
   </div>
   <div class="btns">
    <button id="applydef" type="button">Apply this size to all rooms</button>
    <button id="need" type="button">Set rooms needed</button>
   </div>
   <div id="info" role="status"></div>
+  <p class="sub">Each room: name, rows, total seats. Then benches and students per bench for the left and right side. "Rows" sets each row separately.</p>
   <div id="rooms"></div>
-  <h2>Saved plans</h2>
-  <p class="sub">Plans are saved in this browser and can be reused on this device.</p>
-  <label for="savedPlans">Saved plans</label><select id="savedPlans"><option value="">No saved plans yet</option></select>
-  <div class="btns">
-   <button id="loadPlan" type="button">Load selected plan</button>
-   <button id="deletePlan" type="button">Delete selected plan</button>
-  </div>
   <h2>Print</h2>
   <div class="row2">
    <div><label for="orient">Paper</label><select id="orient"><option value="portrait">A4 portrait</option><option value="landscape">A4 landscape</option></select></div>
-   <div><label for="mix">Arrangement</label><select id="mix"><option value="mix">Mix classes &amp; sections (rolls in order)</option><option value="seq">In roll order</option></select></div>
+   <div><label for="mix">Arrangement</label><select id="mix"><option value="col">Column-wise (school format)</option><option value="mix">Mix classes</option><option value="seq">In roll order</option></select></div>
+  </div>
+  <div class="row2">
+   <div><label for="rord">Roll order (down each column, room by room)</label><select id="rord"><option value="asc">Ascending</option><option value="desc">Descending</option></select></div>
+   <div><label>Class order</label><label style="display:flex;gap:6px;align-items:center;color:var(--ink);margin:6px 0 0"><input id="scr" type="checkbox" checked style="width:auto"> Scramble classes</label></div>
   </div>
   <div class="btns">
    <button class="pri" id="gen" type="button">Make seating plan</button>
+   <button id="rescr" type="button">Scramble again</button>
    <button id="print" type="button">Print / Save PDF</button>
   </div>
   <div id="msg" role="status"></div>
@@ -151,294 +142,207 @@ th,td{border:1px solid #333;padding:3px 6px;text-align:left;vertical-align:top}t
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
 const $=id=>document.getElementById(id);
-let groups=[{c:'10',s:'A',n:35},{c:'10',s:'B',n:35},{c:'9',s:'A',n:30}];
+let classes=[{c:'10',secs:[{s:'A',n:35},{s:'B',n:35}]},{c:'9',secs:[{s:'A',n:30}]}];
+const flat=()=>classes.flatMap(k=>k.secs.map(x=>({c:k.c,s:x.s,n:x.n,rolls:x.rolls,names:x.names})));
 let rooms=[];
 let plan=null;
-const SAVED_PLANS_KEY='seat-planner-saved-plans-v1';
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const lab=g=>`${esc(g.c)}${g.s?'-'+esc(g.s):''}`;
+const lab=g=>`${esc(g.c)}${g.s?'"'+esc(g.s)+'"':''}`;
+const rno=n=>{const m=String(n).match(/(\d+)\s*$/);return m?m[1]:n};
 const hue=i=>`hsl(${(i*67+110)%360} 55% 86%)`;
 const rng=a=>{a=[...a].sort((x,y)=>x-y);const o=[];let i=0;while(i<a.length){let j=i;while(j+1<a.length&&a[j+1]===a[j]+1)j++;o.push(j>i?a[i]+'-'+a[j]:''+a[i]);i=j+1}return o.join(', ')};
-const rowSetting=v=>{const r=clamp(v,1,30);return {r,display:r}};
-const rowCaps=m=>m.rc?m.rc.slice(0,m.r).map(x=>x.b*x.p):Array.from({length:Math.max(0,m.r)},()=>m.b*m.p);
+const rcfg=(m,i)=>m.rc&&m.rc[i]?m.rc[i]:m;
+const rcap=x=>x.lb*x.lp+x.rb*x.rp;
+const rowCaps=m=>Array.from({length:Math.max(0,m.r)},(_,i)=>rcap(rcfg(m,i)));
 const cap=m=>rowCaps(m).reduce((a,b)=>a+b,0);
 const clamp=(v,a,b)=>Math.min(b,Math.max(a,Math.round(+v)||a));
 function say(t,err){$('msg').textContent=t;$('msg').className=err?'err':''}
-function readSavedPlans(){
- try{
-  const raw=localStorage.getItem(SAVED_PLANS_KEY);
-  if(!raw)return [];
-  const saved=JSON.parse(raw);
-  if(!Array.isArray(saved))throw new Error('Saved plans data is not a list.');
-  return saved;
- }catch(err){
-  say(`Could not read saved plans from this browser: ${err.message}`,1);
-  return null;
- }
-}
-function refreshSavedPlans(selectedId=''){
- const saved=readSavedPlans(),select=$('savedPlans');
- if(!saved){select.innerHTML='<option value="">Saved plans unavailable</option>';return false}
- saved.sort((a,b)=>b.savedAt-a.savedAt);
- select.innerHTML=saved.length
-  ?saved.map(item=>`<option value="${esc(item.id)}">${esc(item.name)}</option>`).join('')
-  :'<option value="">No saved plans yet</option>';
- if(selectedId&&saved.some(item=>item.id===selectedId))select.value=selectedId;
- $('loadPlan').disabled=!saved.length;
- $('deletePlan').disabled=!saved.length;
- return true;
-}
-function buildSummaryReport(seatingPlan){
- return {
-  totalStudents:seatingPlan.T,
-  rooms:seatingPlan.rl.map(room=>{
-   const rollsByClass=new Map();
-   room.rows.forEach(row=>row.cells.forEach(cell=>{
-    if(!cell)return;
-    if(!rollsByClass.has(cell.g))rollsByClass.set(cell.g,[]);
-    rollsByClass.get(cell.g).push(cell.r);
-   }));
-   return {
-    name:room.name,total:room.cnt,totalRows:room.totalRows,capacity:room.capacity,split:room.split,
-    classes:[...rollsByClass].map(([classIndex,rolls])=>({
-     classIndex,label:lab(seatingPlan.gs[classIndex]),total:rolls.length,rolls:rolls.sort((a,b)=>a-b)
-    }))
-   };
-  })
- };
-}
-function saveCurrentPlan(notice=''){
- const saved=readSavedPlans();
- if(!saved)return false;
- const school=$('school').value.trim()||'Untitled school';
- const exam=$('exam').value.trim()||'Untitled exam';
- const date=$('date').value||'No date';
- const name=`${school} — ${exam} — ${date}`;
- const id=JSON.stringify([school,exam,date]);
- const snapshot={
-  school:$('school').value,location:$('location').value,exam:$('exam').value,date:$('date').value,
-  groups,rooms,nrooms:$('nrooms').value,start:$('start').value,prefix:$('prefix').value,
-  rows:$('rows').value,twoSides:$('twoSides').checked,benches:$('benches').value,per:$('per').value,
-  orient:$('orient').value,mix:$('mix').value,
-  generatedPlan:plan,summaryReport:buildSummaryReport(plan)
- };
- try{
-  const index=saved.findIndex(item=>item.id===id);
-  const record={id,name,savedAt:Date.now(),snapshot:JSON.parse(JSON.stringify(snapshot))};
-  if(index>=0)saved[index]=record;else saved.push(record);
-  localStorage.setItem(SAVED_PLANS_KEY,JSON.stringify(saved));
- }catch(err){
-  say(`Plan generated, but could not save it in this browser: ${err.message}${notice}`,1);
-  return false;
- }
- if(!refreshSavedPlans(id))return false;
- say(`Plan saved as "${name}". Select it under Saved plans to reuse it.${notice}`);
- return true;
-}
-function restoreSavedPlan(){
- const saved=readSavedPlans();
- if(!saved)return;
- const record=saved.find(item=>item.id===$('savedPlans').value);
- if(!record){say('Select a saved plan to load.',1);return}
- const s=record.snapshot;
- if(!s||!Array.isArray(s.groups)||!Array.isArray(s.rooms)){say('This saved plan is incomplete and cannot be loaded.',1);return}
- groups=s.groups;rooms=s.rooms;
- $('school').value=s.school||'';$('location').value=s.location||'';$('exam').value=s.exam||'';$('date').value=s.date||'';
- $('nrooms').value=s.nrooms||rooms.length;$('start').value=s.start||'0';$('prefix').value=s.prefix||'Room';
- $('rows').value=s.rows||'6';$('twoSides').checked=!!s.twoSides;$('benches').value=s.benches||'4';$('per').value=s.per||'2';
- $('orient').value=s.orient||'portrait';$('mix').value=s.mix||'mix';
- drawGroups();drawRooms();
- if(s.generatedPlan&&Array.isArray(s.generatedPlan.gs)&&Array.isArray(s.generatedPlan.rl)&&
-    s.summaryReport&&Array.isArray(s.summaryReport.rooms)&&s.summaryReport.rooms.length===s.generatedPlan.rl.length){
-  plan={...s.generatedPlan,summaryReport:s.summaryReport};render();
- }else generate(false);
- if(plan)say(`Loaded "${record.name}". Make seating plan to save any changes.`);
-}
-function deleteSavedPlan(){
- const saved=readSavedPlans();
- if(!saved)return;
- const id=$('savedPlans').value,record=saved.find(item=>item.id===id);
- if(!record){say('Select a saved plan to delete.',1);return}
- try{localStorage.setItem(SAVED_PLANS_KEY,JSON.stringify(saved.filter(item=>item.id!==id)))}
- catch(err){say(`Could not delete saved plan: ${err.message}`,1);return}
- refreshSavedPlans();
- say(`Deleted saved plan "${record.name}".`);
-}
-const total=()=>groups.reduce((a,g)=>a+(g.c.trim()?(g.rolls?g.rolls.length:Math.max(0,g.n||0)):0),0);
+const total=()=>flat().reduce((a,g)=>a+(g.c.trim()?(g.rolls?g.rolls.length:Math.max(0,g.n||0)):0),0);
+const defCap=()=>clamp($('rows').value,1,30)*(clamp($('lb').value,0,12)*clamp($('lp').value,1,3)+clamp($('rb').value,0,12)*clamp($('rp').value,1,3));
 function info(){
- const T=total(),S=rooms.reduce((a,m)=>a+cap(m),0),d=rowSetting($('rows').value).r*clamp($('benches').value,1,12)*clamp($('per').value,1,3);
- const el=$('info');
+ const T=total(),S=rooms.reduce((a,m)=>a+cap(m),0),d=defCap(),el=$('info');
  el.className=S<T?'err':'';
- el.textContent=`${T} students | ${rooms.length} rooms, ${S} seats | `+(S>=T?'enough seats':`short by ${T-S} seats`)+` | ${Math.ceil(T/d)} rooms needed at the new-room size`;
+ el.textContent=`${T} students | ${rooms.length} rooms, ${S} seats | `+(S>=T?'enough seats':`short by ${T-S} seats`)+` | ${Math.ceil(T/Math.max(1,d))} rooms needed at the new-room size`;
 }
 function newRoom(){
  const last=rooms[rooms.length-1],mt=last&&last.name.match(/(\d+)\s*$/),num=mt?+mt[1]+1:(+$('start').value||0)+rooms.length;
- const rs=rowSetting($('rows').value);
- return {name:`${$('prefix').value.trim()} ${num}`.trim(),r:rs.r,split:$('twoSides').checked,rowDisplay:rs.display,b:clamp($('benches').value,1,12),p:clamp($('per').value,1,3),aisle:0};
+ return {name:`${$('prefix').value.trim()} ${num}`.trim(),r:clamp($('rows').value,1,30),lb:clamp($('lb').value,0,12),lp:clamp($('lp').value,1,3),rb:clamp($('rb').value,0,12),rp:clamp($('rp').value,1,3)};
 }
 function setCount(n){n=clamp(n,1,500);while(rooms.length<n)rooms.push(newRoom());rooms.length=n;$('nrooms').value=n;drawRooms()}
-const edHtml=(m,j)=>`<div class="ed" id="ed${j}"><div class="edh row2"><div><label for="ai${j}">Aisle after bench no. (0 = none)</label><input id="ai${j}" data-j="${j}" data-f="aisle" type="number" min="0" max="12" value="${m.aisle||0}"></div><label class="checkline"><input data-j="${j}" data-f="split" type="checkbox"${m.split?' checked':''}> Two sides</label></div>
- <div class="edr hd"><span>Row</span><span>Benches</span><span>Seats/bench</span><span>Seats</span></div>`+
- m.rc.slice(0,m.r).map((x,i)=>`<div class="edr"><span>Row ${i+1}</span><input data-j="${j}" data-row="${i}" data-f="rb" type="number" min="0" max="12" value="${x.b}" aria-label="Row ${i+1} benches"><input data-j="${j}" data-row="${i}" data-f="rp" type="number" min="0" max="3" value="${x.p}" aria-label="Row ${i+1} seats per bench"><span id="rs${j}_${i}">${x.b*x.p}</span></div>`).join('')+
+const edHtml=(m,j)=>`<div class="ed" id="ed${j}"><div class="sub" style="font-size:12px;margin-bottom:4px">Each row: benches and students per bench, left side then right side</div>
+ <div class="edr hd"><span>Row</span><span>L benches</span><span>L per bench</span><span>R benches</span><span>R per bench</span><span>Seats</span></div>`+
+ m.rc.slice(0,m.r).map((x,i)=>`<div class="edr"><span>Row ${i+1}</span>${['lb','lp','rb','rp'].map(f=>`<input data-j="${j}" data-row="${i}" data-f="${f}" type="number" min="0" max="${f[1]==='b'?12:3}" value="${x[f]}" aria-label="Row ${i+1} ${f}">`).join('')}<span id="rs${j}_${i}">${rcap(x)}</span></div>`).join('')+
  `<button type="button" data-rst="${j}">Make all rows equal again</button></div>`;
+const sideHtml=(m,i,t,b,p)=>`<div class="side"><b>${t}</b><input data-j="${i}" data-f="${b}" type="number" min="0" max="12" value="${m[b]}" aria-label="${t} benches"><span>benches ×</span><input data-j="${i}" data-f="${p}" type="number" min="1" max="3" value="${m[p]}" aria-label="${t} students per bench"><span>students</span></div>`;
 function drawRooms(){
- $('rooms').innerHTML=`<div class="rhead"><span>Room</span><span>Rows</span><span>Benches</span><span>Seats/bench</span><span>Seats</span><span></span><span></span></div>`+
- rooms.map((m,i)=>`<div class="rm"><input data-j="${i}" data-f="name" value="${esc(m.name)}" aria-label="Room name">
- <input data-j="${i}" data-f="r" type="number" min="1" max="30" step="1" value="${m.rowDisplay??m.r}" aria-label="Total rows">
- <input data-j="${i}" data-f="b" type="number" min="1" max="12" value="${m.b}" aria-label="Benches per row">
- <input data-j="${i}" data-f="p" type="number" min="1" max="3" value="${m.p}" aria-label="Seats per bench">
- <span class="cp" id="cp${i}">${cap(m)}</span><button type="button" data-ed="${i}" aria-expanded="${!!m.open}" title="Set each row separately">Rows</button><button type="button" data-rm="${i}" aria-label="Remove room">✕</button>${m.open&&m.rc?edHtml(m,i):''}</div>`).join('');
+ $('rooms').innerHTML=rooms.map((m,i)=>`<div class="rm"><input data-j="${i}" data-f="name" value="${esc(m.name)}" aria-label="Room name">
+ <input data-j="${i}" data-f="r" type="number" min="1" max="30" value="${m.r}" aria-label="Rows">
+ <span class="cp" id="cp${i}" title="Total seats">${cap(m)}</span><button type="button" data-ed="${i}" aria-expanded="${!!m.open}" title="Set each row separately">Rows</button><button type="button" data-rm="${i}" aria-label="Remove room">✕</button>
+ ${sideHtml(m,i,'Left','lb','lp')}${sideHtml(m,i,'Right','rb','rp')}${m.open&&m.rc?edHtml(m,i):''}</div>`).join('');
  info();
 }
-function applyRowSetting(t){
- const j=+t.dataset.j,m=rooms[j];
- if(t.dataset.f==='split')m.split=t.checked;
- else{
-  const n=Number(t.value);
-  if(!t.value.trim()||!Number.isInteger(n)||n<1||n>30){
-   t.value=m.rowDisplay??m.r;
-   say('Enter a whole number of rows between 1 and 30.',1);
-   return;
-  }
-  const rs=rowSetting(n);m.r=rs.r;m.rowDisplay=rs.display;
- }
- if(m.rc){while(m.rc.length<m.r)m.rc.push({b:m.b,p:m.p});m.rc.length=m.r}
- if(m.open){const el=$('ed'+j);if(el)el.outerHTML=edHtml(m,j)}
- const c=$('cp'+j);if(c)c.textContent=cap(m);
- info();
-}
-$('rooms').addEventListener('input',e=>{const t=e.target,f=t.dataset.f;if(!f||f==='r')return;const j=+t.dataset.j,m=rooms[j],v=Math.max(0,Math.round(+t.value)||0);
-if(f==='name')m.name=t.value;
-else if(f==='aisle')m.aisle=v;
-else if(f==='rb'||f==='rp'){const x=m.rc[+t.dataset.row];x[f[1]]=v;const sp=$(`rs${j}_${t.dataset.row}`);if(sp)sp.textContent=x.b*x.p}
-else{m[f]=v;if(m.rc){m.rc.forEach(x=>{x[f]=v});
-  if(m.open){const el=$('ed'+j);if(el)el.outerHTML=edHtml(m,j)}}}
-const c=$('cp'+j);if(c)c.textContent=cap(m);info()});
-$('rooms').addEventListener('change',e=>{if(e.target.dataset.f==='r'||e.target.dataset.f==='split')applyRowSetting(e.target)});
+$('rooms').addEventListener('input',e=>{const t=e.target,f=t.dataset.f;if(!f)return;const j=+t.dataset.j,m=rooms[j],v=Math.max(0,Math.round(+t.value)||0);
+ if(f==='name')m.name=t.value;
+ else if(t.dataset.row!==undefined){const x=m.rc[+t.dataset.row];x[f]=v;const sp=$(`rs${j}_${t.dataset.row}`);if(sp)sp.textContent=rcap(x)}
+ else{m[f]=v;if(m.rc){if(f==='r'){while(m.rc.length<m.r)m.rc.push({lb:m.lb,lp:m.lp,rb:m.rb,rp:m.rp});m.rc.length=m.r}else m.rc.forEach(x=>{x[f]=v});
+   if(m.open){const el=$('ed'+j);if(el)el.outerHTML=edHtml(m,j)}}}
+ const c=$('cp'+j);if(c)c.textContent=cap(m);info()});
 $('rooms').addEventListener('click',e=>{const d=e.target.dataset;
  if(d.rm!==undefined){if(rooms.length>1){rooms.splice(+d.rm,1);$('nrooms').value=rooms.length;drawRooms()}}
- else if(d.ed!==undefined){const m=rooms[+d.ed];m.open=!m.open;if(m.open&&!m.rc)m.rc=Array.from({length:m.r},()=>({b:m.b,p:m.p}));drawRooms()}
+ else if(d.ed!==undefined){const m=rooms[+d.ed];m.open=!m.open;if(m.open&&!m.rc)m.rc=Array.from({length:m.r},()=>({lb:m.lb,lp:m.lp,rb:m.rb,rp:m.rp}));drawRooms()}
  else if(d.rst!==undefined){const m=rooms[+d.rst];delete m.rc;m.open=false;drawRooms()}});
 $('nrooms').addEventListener('change',e=>setCount(e.target.value));
-$('applydef').onclick=()=>{const n=newRoom();rooms.forEach(m=>{m.r=n.r;m.split=n.split;m.rowDisplay=n.rowDisplay;m.b=n.b;m.p=n.p;delete m.rc;m.open=false});drawRooms()};
-$('need').onclick=()=>{const d=rowSetting($('rows').value).r*clamp($('benches').value,1,12)*clamp($('per').value,1,3);setCount(Math.max(1,Math.ceil(total()/d)))};
-['rows','benches','per'].forEach(id=>$(id).addEventListener('input',info));
-$('loadPlan').onclick=restoreSavedPlan;
-$('deletePlan').onclick=deleteSavedPlan;
+$('applydef').onclick=()=>{const n=newRoom();rooms.forEach(m=>{Object.assign(m,{r:n.r,lb:n.lb,lp:n.lp,rb:n.rb,rp:n.rp});delete m.rc;m.open=false});drawRooms()};
+$('need').onclick=()=>setCount(Math.max(1,Math.ceil(total()/Math.max(1,defCap()))));
+['rows','lb','lp','rb','rp'].forEach(id=>$(id).addEventListener('input',info));
 
 function drawGroups(){
- $('groups').innerHTML=groups.map((g,i)=>`<div class="grp">
- <div><label>Class</label><input data-i="${i}" data-k="c" value="${esc(g.c)}"></div>
- <div><label>Section</label><input data-i="${i}" data-k="s" value="${esc(g.s)}"></div>
- <div><label>Students</label><input data-i="${i}" data-k="n" type="number" min="1" value="${g.rolls?g.rolls.length:g.n}"></div>
- <button type="button" data-del="${i}" aria-label="Remove class">✕</button>
- ${g.rolls?`<div class="sub" id="n${i}" style="grid-column:1/-1;font-size:12px">Roll numbers come from the imported file</div>`:''}</div>`).join('');
+ $('groups').innerHTML=classes.map((k,ci)=>`<div class="cls"><div class="ch"><div><label>Class</label><input data-ci="${ci}" data-k="c" value="${esc(k.c)}"></div><button type="button" data-dc="${ci}">Remove class</button></div>
+ ${k.secs.map((x,si)=>`<div class="sec"><div><label>Section</label><input data-ci="${ci}" data-si="${si}" data-k="s" value="${esc(x.s)}"></div><div><label>Students</label><input data-ci="${ci}" data-si="${si}" data-k="n" type="number" min="1" value="${x.rolls?x.rolls.length:x.n}"></div><button type="button" data-ds="${ci}:${si}" aria-label="Remove section">✕</button>${x.rolls?`<div class="sub" id="n${ci}_${si}" style="grid-column:1/-1;font-size:12px">Roll numbers come from the imported file</div>`:''}</div>`).join('')}
+ <button type="button" data-as="${ci}">Add section</button></div>`).join('');
  info();
 }
-$('groups').addEventListener('input',e=>{const t=e.target,k=t.dataset.k;if(!k)return;const g=groups[t.dataset.i];
- if(k==='n'){delete g.rolls;delete g.names;const n=$('n'+t.dataset.i);if(n)n.remove();g.n=+t.value}else g[k]=t.value;info()});
-$('groups').addEventListener('click',e=>{const d=e.target.dataset.del;if(d!==undefined){groups.splice(+d,1);drawGroups()}});
-$('add').onclick=()=>{groups.push({c:'',s:'',n:30});drawGroups()};
+$('groups').addEventListener('input',e=>{const t=e.target,k=t.dataset.k;if(!k)return;const K=classes[t.dataset.ci];
+ if(k==='c')K.c=t.value;
+ else{const x=K.secs[t.dataset.si];if(k==='n'){delete x.rolls;delete x.names;const n=$(`n${t.dataset.ci}_${t.dataset.si}`);if(n)n.remove();x.n=+t.value}else x.s=t.value}
+ info()});
+$('groups').addEventListener('click',e=>{const d=e.target.dataset;
+ if(d.dc!==undefined){classes.splice(+d.dc,1);drawGroups()}
+ else if(d.ds!==undefined){const [a,b]=d.ds.split(':').map(Number);classes[a].secs.splice(b,1);if(!classes[a].secs.length)classes.splice(a,1);drawGroups()}
+ else if(d.as!==undefined){classes[+d.as].secs.push({s:'',n:30});drawGroups()}});
+$('add').onclick=()=>{classes.push({c:'',secs:[{s:'',n:30}]});drawGroups()};
 
-function generate(save=true){
- const gs=groups.filter(g=>g.c.trim()&&(g.rolls?g.rolls.length:g.n>0));
+let seed=Math.floor(Math.random()*1e9);
+const mulberry=a=>()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296};
+const shuf=(a,r)=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+// students already placed on the same bench, to the left of seat j
+function mates(row,j,gs){
+ let bs;
+ if(j<row.L){const p=Math.max(1,row.lp);bs=j-j%p}else{const p=Math.max(1,row.rp),o=j-row.L;bs=row.L+o-o%p}
+ const g=new Set(),k=new Set();
+ for(let x=bs;x<j;x++){const c=row.cells[x];if(c){g.add(c.g);k.add(gs[c.g].c)}}
+ return {g,k};
+}
+function fillRows(rows,q,gs,mix){
+ rows.forEach((row,ri)=>{const prev=rows[ri-1];
+  for(let j=0;j<row.occ;j++){
+   const lf=j?row.cells[j-1]:null,up=prev?prev.cells[j]||null:null,pool=q.filter(x=>x.rolls.length),{k}=mates(row,j,gs);
+   const nb=x=>!k.has(gs[x.i].c),nn=x=>!(lf&&lf.g===x.i)&&!(up&&up.g===x.i);
+   let pick;
+   if(mix){const use=[pool.filter(x=>nb(x)&&nn(x)),pool.filter(nb),pool.filter(nn)].find(a=>a.length)||pool;pick=use.reduce((a,b)=>b.rolls.length>a.rolls.length?b:a)}
+   else pick=pool.find(nb)||pool[0];
+   const roll=pick.rolls.shift();row.cells[j]={g:pick.i,r:roll,n:(gs[pick.i].names||{})[roll]||''};
+  }});
+}
+function bench(row,j){
+ if(j<row.L){const p=Math.max(1,row.lp),a=j-j%p;return [a,Math.min(a+p,row.L)]}
+ const p=Math.max(1,row.rp),o=j-row.L,a=row.L+o-o%p;return [a,Math.min(a+p,row.cells.length)];
+}
+function conf(row,j,gs){const [a,b]=bench(row,j),seen=new Set();let d=0;for(let x=a;x<b;x++){const c=row.cells[x];if(!c)continue;const k=gs[c.g].c;if(seen.has(k))d++;else seen.add(k)}return d}
+// school format: each column holds one class, rolls run front to back, right side starts half a turn later.
+// Students of the same class never share a bench unless there is no other choice.
+function fillCols(rows,q,cnt,gs,rnd){
+ const tot=q.reduce((a,x)=>a+x.rolls.length,0),ex=q.map(x=>cnt*x.rolls.length/tot),n=ex.map(Math.floor);
+ let rem=cnt-n.reduce((a,b)=>a+b,0);
+ ex.map((x,i)=>[x-Math.floor(x),i]).sort((a,b)=>b[0]-a[0]).forEach(([,i])=>{if(rem>0&&n[i]<q[i].rolls.length){n[i]++;rem--}});
+ const mine=q.map((x,i)=>x.rolls.splice(0,n[i]));
+ let act=q.map((x,i)=>i).filter(i=>mine[i].length);
+ if(rnd)act=shuf(act,rnd);
+ const by=new Map();act.forEach(i=>{const c=gs[i].c;if(!by.has(c))by.set(c,[]);by.get(c).push(i)});
+ const lists=[...by.values()],ord=[];
+ for(let r=0;ord.length<act.length;r++)lists.forEach(l=>{if(l[r]!==undefined)ord.push(l[r])});
+ act=ord;
+ const K=act.length,half=Math.floor(K/2),W=Math.max(...rows.map(r=>r.cells.length)),left=mine.map(a=>a.length),has=i=>left[i]>0;
+ // 1. decide which class sits where
+ for(let j=0;j<W;j++)for(const row of rows){
+  if(j>=row.occ)continue;
+  const right=row.L>0&&j>=row.L,sj=right?j-row.L:j,{g,k}=mates(row,j,gs),lf=j?row.cells[j-1]:null;
+  let c=act[(sj+(right?half:0))%K];
+  if(!has(c)||k.has(gs[c].c)){
+   const pool=act.filter(has);
+   const use=[pool.filter(i=>!k.has(gs[i].c)&&!(lf&&lf.g===i)),pool.filter(i=>!k.has(gs[i].c)),pool.filter(i=>!g.has(i)),pool].find(a=>a.length);
+   c=use.reduce((a,b)=>left[b]>left[a]?b:a);
+  }
+  left[c]--;row.cells[j]={g:c};
+ }
+ // 2. swap seats to clear any bench that still has two students of one class
+ const occ=[];rows.forEach((row,ri)=>{for(let j=0;j<row.occ;j++)occ.push([ri,j])});
+ for(let pass=0;pass<4;pass++){
+  let changed=false;
+  for(const [ri,j] of occ){
+   const A=rows[ri];if(!conf(A,j,gs))continue;
+   for(const [rj,x] of occ){
+    const B=rows[rj],a=A.cells[j],b=B.cells[x];if(a.g===b.g)continue;
+    const same=rj===ri&&bench(A,j)[0]===bench(B,x)[0],before=conf(A,j,gs)+(same?0:conf(B,x,gs));
+    A.cells[j]=b;B.cells[x]=a;
+    if(conf(A,j,gs)+(same?0:conf(B,x,gs))<before){changed=true;break}
+    A.cells[j]=a;B.cells[x]=b;
+   }
+  }
+  if(!changed)break;
+ }
+ // 3. give roll numbers down each column, in the chosen order
+ for(let j=0;j<W;j++)for(const row of rows){
+  const c=row.cells[j];if(!c||j>=row.occ)continue;
+  const roll=mine[c.g].shift();c.r=roll;c.n=(gs[c.g].names||{})[roll]||'';
+ }
+}
+function generate(){
+ const gs=flat().filter(g=>g.c.trim()&&(g.rolls?g.rolls.length:g.n>0));
  if(!gs.length){say('Add at least one class with students.',1);return}
  const bad=rooms.find(m=>cap(m)<1);
  if(bad){say(`Room "${bad.name||'unnamed'}" needs at least 1 row, 1 bench and 1 seat per bench. Fix or remove it.`,1);return}
- const mix=$('mix').value==='mix';
- const classOrder=[...new Map(gs.map(g=>[g.c.trim().toLowerCase(),g.c.trim()])).values()];
- const classGroups=classOrder.map(cls=>gs.map((g,i)=>({g,i})).filter(x=>x.g.c.trim().toLowerCase()===cls.toLowerCase()));
- const orderedGroups=mix?Array.from({length:Math.max(...classGroups.map(x=>x.length))},(_,sectionIndex)=>classGroups.flatMap(sections=>sections[sectionIndex]?[sections[sectionIndex]]:[])).flat():gs.map((g,i)=>({g,i}));
- const q=orderedGroups.map(({g,i})=>({i,rolls:g.rolls?g.rolls.slice():Array.from({length:g.n},(_,k)=>k+1)}));
- let groupCursor=0,sameClassBenchPairs=0;
- const nextQueue=mix?(excludeClass='')=>{
-  for(let pass=0;pass<2;pass++){
-   for(let offset=0;offset<q.length;offset++){
-    const index=(groupCursor+offset)%q.length,item=q[index];
-    if(!item.rolls.length||pass===0&&excludeClass&&gs[item.i].c.trim().toLowerCase()===excludeClass)continue;
-    groupCursor=(index+1)%q.length;
-    return item;
-   }
-  }
-  return null;
- }:()=>q.find(x=>x.rolls.length)||null;
+ const desc=$('rord').value==='desc',srt=a=>{a.sort((x,y)=>x-y);return desc?a.reverse():a};
+ const q=gs.map((g,i)=>({i,rolls:srt(g.rolls?g.rolls.slice():Array.from({length:g.n},(_,k)=>k+1))}));
  const T=q.reduce((a,x)=>a+x.rolls.length,0),caps=rooms.map(cap),S=caps.reduce((a,b)=>a+b,0);
  if(T>S){say(`${T} students but only ${S} seats. Add rooms or make rooms bigger (short by ${T-S} seats).`,1);return}
  // share students across rooms in proportion to capacity
  const exact=caps.map(c=>T*c/S),cnt=exact.map(Math.floor);
  let rem=T-cnt.reduce((a,b)=>a+b,0);
  exact.map((x,i)=>[x-Math.floor(x),i]).sort((a,b)=>b[0]-a[0]).forEach(([,i])=>{if(rem>0&&cnt[i]<caps[i]){cnt[i]++;rem--}});
- const rl=[];
+ const mode=$('mix').value,rl=[];
  rooms.forEach((m,k)=>{
   if(!cnt[k])return;
   const rows=[];let left=cnt[k];
-  const caps=rowCaps(m);
-  const placeRow=(c,i,prev,side,sideRow)=>{
-   if((left<=0&&!m.split)||c<1)return null;
-   const cells=Array(c).fill(null);
-   const benchSize=m.rc?m.rc[i].p:m.p;
-   for(let j=0;j<c&&left>0;j++){
-    const seatIndex=(sideRow??i+1)%2===0?c-1-j:j;
-    const benchStart=Math.floor(seatIndex/benchSize)*benchSize;
-    const benchClass=mix?cells.slice(benchStart,benchStart+benchSize).find(Boolean):null;
-    const excludeClass=benchClass?gs[benchClass.g].c.trim().toLowerCase():'';
-    const pick=nextQueue(excludeClass);
-    if(!pick)break;
-    if(benchClass&&gs[pick.i].c.trim().toLowerCase()===excludeClass)sameClassBenchPairs++;
-    const roll=pick.rolls.shift();cells[seatIndex]={g:pick.i,r:roll,n:(gs[pick.i].names||{})[roll]||''};left--;
-   }
-   const row={cells,p:m.rc?m.rc[i].p:m.p,b:m.rc?m.rc[i].b:m.b,idx:i+1,side,sideRow};rows.push(row);return row;
-  };
-  if(m.split){
-   const leftCount=Math.floor(caps.length/2),prev=[null,null];
-   for(let side=0;side<2;side++){
-    const start=side===0?0:leftCount,end=side===0?leftCount:caps.length;
-    for(let i=start;i<end;i++)prev[side]=placeRow(caps[i],i,prev[side],side,i-start+1)||prev[side];
-   }
-  }else{
-   let prev=null;
-   caps.forEach((c,i)=>{prev=placeRow(c,i,prev,null,null)||prev});
-  }
-  rl.push({name:m.name||`Room ${k+1}`,rows,cnt:cnt[k],aisle:m.aisle||0,split:!!m.split,totalRows:m.r,capacity:cap(m)});
+  rowCaps(m).forEach((c,i)=>{
+   if(left<=0||c<1)return;
+   const occ=Math.min(c,left),x=rcfg(m,i);left-=occ;
+   rows.push({cells:Array(c).fill(null),occ,L:x.lb*x.lp,R:x.rb*x.rp,lp:x.lp,rp:x.rp,idx:i+1});
+  });
+  if(mode==='col')fillCols(rows,q,cnt[k],gs,$('scr').checked?mulberry(seed+k*7919):null);else fillRows(rows,q,gs,mode==='mix');
+  rl.push({name:m.name||`Room ${k+1}`,rows,cnt:cnt[k]});
  });
  plan={gs,rl,T};
  render();
  const unused=rooms.length-rl.length;
- const notice=sameClassBenchPairs?` ${sameClassBenchPairs} same-class bench pair${sameClassBenchPairs===1?' was':'s were'} unavoidable because of the class distribution.`:'';
- if(save)saveCurrentPlan(notice);
- else say(`${T} students placed in ${rl.length} room${rl.length>1?'s':''}${unused?` (${unused} left empty)`:''}.${notice} Press the button again after any change.`);
+ say(`${T} students placed in ${rl.length} room${rl.length>1?'s':''}${unused?` (${unused} left empty)`:''}. Press the button again after any change.`);
 }
 function render(){
  if(!plan)return;
  const {gs,rl,T}=plan,land=$('orient').value==='landscape',L=land?'land':'';
- const summaryReport=plan.summaryReport||buildSummaryReport(plan);
  $('pg').textContent=`@page{size:A4 ${land?'landscape':'portrait'};margin:10mm}`;
  const dt=$('date').value?new Date($('date').value).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}):'';
- const head=r=>`<header class="print-head"><h3>${esc($('school').value)}</h3>${$('location').value.trim()?`<div class="location">${esc($('location').value)}</div>`:''}<div class="exam">${esc($('exam').value)}${dt?` - ${dt}`:''}</div><div class="title">Seat Planning</div><div class="room">Room no.: ${esc(r.name)}</div></header>`;
+ const head=(title,rm)=>`<div class="hd"><div class="sn">${esc($('school').value)}</div><div>${esc($('addr').value)}</div><div class="ex">${esc($('exam').value)}</div><div class="sp">${title}</div></div><div class="rn"><span>${dt}</span><b>${rm||''}</b></div>`;
  const stats=rl.map(r=>{const m={};r.rows.forEach(w=>w.cells.forEach(c=>{if(c)(m[c.g]=m[c.g]||[]).push(c.r)}));return m});
- let h='';
+ let h=`<div class="sheet first ${L}">${head('Room Allocation',`Total students: ${T}`)}<h4>Room-wise</h4>
+ <table><thead><tr><th>Room</th><th>Class</th><th>Students</th><th>Roll numbers</th></tr></thead>`;
+ rl.forEach((r,k)=>{const ids=Object.keys(stats[k]).map(Number).sort((a,b)=>a-b);
+  ids.forEach((gi,j)=>{h+=`<tr>${j?'':`<td rowspan="${ids.length}"><b>${esc(r.name)}</b><br>${r.cnt} total</td>`}<td>${lab(gs[gi])}</td><td>${stats[k][gi].length}</td><td>${rng(stats[k][gi])}</td></tr>`})});
+ h+=`</table><h4>Class-wise</h4><table><thead><tr><th>Class</th><th>Students</th><th>Where to sit</th></tr></thead>`;
+ gs.forEach((g,gi)=>{const parts=[];let tot=0;rl.forEach((r,k)=>{const a=stats[k][gi];if(a){tot+=a.length;parts.push(`<b>${esc(r.name)}</b>: ${rng(a)}`)}});
+  h+=`<tr><td>${lab(g)}</td><td>${tot}</td><td>${parts.join('; ')}</td></tr>`});
+ h+=`</table></div>`;
  rl.forEach((r,k)=>{
-  const maxBankRows=r.split?Math.max(Math.floor(r.totalRows/2),Math.ceil(r.totalRows/2)):r.totalRows;
-  const seatFontScale=Math.min(1,Math.max(.45,7/maxBankRows));
-  h+=`<div class="sheet ${L}">${head(r)}<div class="print-room-grid${r.split?'':' single'}" style="--seat-class-size:${(16*seatFontScale).toFixed(1)}pt;--seat-roll-size:${(18*seatFontScale).toFixed(1)}pt">`;
-  const drawBank=rows=>{
-   h+='<div class="print-bank">';
-   rows.forEach(row=>{
-    const colCount=Math.max(1,row.cells.length);
-    h+=`<div class="print-bank-row" style="grid-template-columns:repeat(${colCount},minmax(0,1fr))">`;
-    row.cells.forEach((c,j)=>{const benchGap=j>0&&j%row.p===0?' bench-gap':'';h+=c?`<div class="print-seat${benchGap}"><strong>${lab(gs[c.g])}</strong><span>${c.r}</span></div>`:`<div class="print-seat empty${benchGap}">&nbsp;</div>`});
-    h+='</div>';
-   });
-   h+='</div>';
-  };
-  if(r.split){
-   const sideA=r.rows.filter(row=>row.side===0),sideB=r.rows.filter(row=>row.side===1);
-   drawBank(sideA);drawBank(sideB);
-  }else drawBank(r.rows);
-  const roomSummary=summaryReport.rooms[k];
-  h+=`</div><table class="print-summary"><thead><tr><th>Class</th><th>Roll no.</th><th>Total</th></tr></thead><tbody>`;
-  roomSummary.classes.forEach(entry=>h+=`<tr><td>${entry.label}</td><td class="rolls">${entry.rolls.join(',')}</td><td>${entry.total}</td></tr>`);
-  h+=`</tbody><tfoot><tr><td colspan="2">Total students</td><td>${roomSummary.total}</td></tr></tfoot></table></div>`;
+  const maxS=Math.max(...r.rows.map(x=>x.cells.length)),colw=Math.min(30,((land?297:210)-20)/(maxS+(r.rows.some(w=>w.L>0&&w.R>0)?0.6:0))-0.5),fs=Math.max(13,Math.min(22,colw*0.5));
+  h+=`<div class="sheet pb ${L}">${head('Seat Planning',`Room no.: ${esc(rno(r.name))}`)}<div style="--fs:${fs}px;--w:${colw.toFixed(1)}mm">`;
+  r.rows.forEach(row=>{h+=`<div class="srow">`;
+   row.cells.forEach((c,j)=>{const gp=row.L>0&&row.R>0&&j===row.L?' aisle':'';
+    h+=c?`<div class="sc${gp}"><div class="t">${lab(gs[c.g])}</div><div class="v">${c.r}</div>${c.n?`<div class="nm">${esc(c.n.slice(0,16))}</div>`:''}</div>`
+        :`<div class="sc em${gp}"><div class="t">-</div><div class="v">-</div></div>`});
+   h+=`</div>`});
+  const ids=Object.keys(stats[k]).map(Number).sort((a,b)=>a-b);
+  h+=`</div><table class="st"><tr><th>Class</th><th>Roll no.</th><th>Total</th></tr>${ids.map(gi=>`<tr><td>${lab(gs[gi])}</td><td>${[...stats[k][gi]].sort((a,b)=>a-b).join(',')}</td><td>${stats[k][gi].length}</td></tr>`).join('')}
+  <tr><td colspan="2"><b>Total students</b></td><td><b>${r.cnt}</b></td></tr></table></div>`;
  });
  $('out').innerHTML=h;
 }
@@ -461,19 +365,75 @@ $('file').onchange=e=>{
     const g=m.get(k);if(!g.rolls.includes(roll))g.rolls.push(roll);if(nm)g.names[roll]=nm;
    });
    if(!m.size){say('No students found. First sheet needs columns named Class, Section and Roll (Name is optional).',1);return}
-   groups=[...m.values()].map(g=>{g.rolls.sort((a,b)=>a-b);g.n=g.rolls.length;return g})
+   const arr=[...m.values()].map(g=>{g.rolls.sort((a,b)=>a-b);g.n=g.rolls.length;return g})
     .sort((a,b)=>a.c.localeCompare(b.c,undefined,{numeric:true})||a.s.localeCompare(b.s));
+   classes=[];arr.forEach(g=>{let k=classes.find(x=>x.c===g.c);if(!k){k={c:g.c,secs:[]};classes.push(k)}k.secs.push({s:g.s,n:g.n,rolls:g.rolls,names:g.names})});
    drawGroups();generate();
    if(bad)say($('msg').textContent+` ${bad} row(s) skipped (missing class or roll).`);
   }catch(err){say('Could not read this file. Use .xlsx, .xls or .csv.',1)}
  };
  rd.readAsArrayBuffer(f);
 };
-$('gen').onclick=generate;
+$('gen').onclick=()=>{generate();if(plan&&!$('msg').className)savePlan()};
+$('rescr').onclick=()=>{seed=Math.floor(Math.random()*1e9);generate();if(plan&&!$('msg').className)savePlan()};
 $('orient').onchange=render;
 $('print').onclick=()=>{generate();if(plan)window.print()};
-$('date').valueAsDate=new Date();
-drawGroups();setCount(3);refreshSavedPlans();generate(false);
+// ---------- saved plans: cloud first, this device as the fallback
+const LS='seatplans_v1',FIELDS=['school','addr','exam','date','rows','lb','lp','rb','rp','start','prefix','orient','mix','rord'];
+let db=null,cloud=[],armed=null;
+const lsGet=()=>{try{return JSON.parse(localStorage.getItem(LS)||'[]')}catch(e){return []}};
+const lsSet=a=>{try{localStorage.setItem(LS,JSON.stringify(a));return true}catch(e){return false}};
+const hash=t=>{let h=5381;for(const ch of t)h=((h<<5)+h+ch.codePointAt(0))>>>0;return h.toString(36)};
+function snapshotPlan(){
+ const topic=$('exam').value.trim()||'Seat plan',day=$('date').value||new Date().toISOString().slice(0,10);
+ const slug=topic.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,40);
+ const st={};FIELDS.forEach(f=>st[f]=$(f).value);st.scr=!!$('scr').checked;
+ return {id:`p-${slug}-${day}-${hash(topic+'|'+day)}`,topic,regDate:day,savedAt:new Date().toISOString(),
+  students:total(),rooms:plan?plan.rl.length:rooms.length,st,seed,classes:JSON.parse(JSON.stringify(classes)),roomList:JSON.parse(JSON.stringify(rooms))};
+}
+async function savePlan(){
+ const rec=snapshotPlan(),keep=$('msg').textContent;let where='';
+ if(db){try{await db.collection('plans').doc(rec.id).set(rec);where='cloud'}catch(e){}}
+ if(!where){const a=lsGet().filter(x=>x.id!==rec.id);a.unshift(rec);if(lsSet(a))where='device'}
+ else{const a=lsGet();if(a.some(x=>x.id===rec.id))lsSet(a.filter(x=>x.id!==rec.id))}
+ if(where==='device'){const i=cloud.findIndex(x=>x.id===rec.id);if(i<0)cloud=cloud.slice()}
+ drawSaved();
+ say(`${keep} ${where==='cloud'?`Saved to the cloud as "${rec.topic}" (${rec.regDate}).`:where==='device'?`Saved on this device as "${rec.topic}" (${rec.regDate}).`:'Could not save this plan here. Print it or keep the page open.'}`,where===''&&1);
+}
+function allSaved(){
+ const m=new Map();lsGet().forEach(x=>m.set(x.id,{...x,where:'This device'}));
+ cloud.forEach(x=>m.set(x.id,{...x,where:'Cloud'}));
+ return [...m.values()].sort((a,b)=>String(b.savedAt).localeCompare(String(a.savedAt)));
+}
+function drawSaved(){
+ const a=allSaved();
+ $('svs').textContent=`Saved plans (${a.length})`;
+ $('saved').innerHTML=a.length?a.map(x=>`<div class="svi"><div><b>${esc(x.topic)}</b> | ${esc(x.regDate)}<small>${x.students} students, ${x.rooms} rooms | ${esc(x.where)} | saved ${esc(new Date(x.savedAt).toLocaleString())}</small></div>
+  <button type="button" data-open="${esc(x.id)}">Open</button><button type="button" data-sdel="${esc(x.id)}">${armed===x.id?'Sure?':'Delete'}</button></div>`).join(''):'<p class="sub">Nothing saved yet. Plans are saved when you press Make seating plan, under the exam name and date.</p>';
+}
+function openPlan(x){
+ FIELDS.forEach(f=>{if(x.st[f]!==undefined)$(f).value=x.st[f]});$('scr').checked=!!x.st.scr;
+ seed=x.seed;classes=x.classes;rooms=x.roomList;$('nrooms').value=rooms.length;
+ drawGroups();drawRooms();generate();
+ if(!$('msg').className)say(`Opened "${x.topic}" (${x.regDate}). ${$('msg').textContent}`);
+}
+$('saved').addEventListener('click',async e=>{const d=e.target.dataset,all=allSaved();
+ if(d.open){const x=all.find(y=>y.id===d.open);if(x)openPlan(x)}
+ else if(d.sdel){
+  if(armed!==d.sdel){armed=d.sdel;drawSaved();setTimeout(()=>{if(armed===d.sdel){armed=null;drawSaved()}},4000);return}
+  armed=null;
+  if(db){try{await db.collection('plans').doc(d.sdel).delete()}catch(err){}}
+  const a=lsGet();if(a.some(y=>y.id===d.sdel))lsSet(a.filter(y=>y.id!==d.sdel));
+  cloud=cloud.filter(y=>y.id!==d.sdel);drawSaved();
+ }});
+async function initCloud(){
+ try{
+  if(!window.claude||!window.claude.use)return;
+  db=await window.claude.use('db');if(!db)return;
+  db.collection('plans').orderBy('savedAt','desc').onSnapshot(sn=>{cloud=sn.docs.map(d=>({...d.data(),id:d.id}));drawSaved()},()=>{db=null;cloud=[];drawSaved()});
+ }catch(e){db=null}
+}
+drawGroups();setCount(Math.max(1,Math.ceil(total()/Math.max(1,defCap()))));generate();drawSaved();initCloud();
 </script>
 </body>
 </html>
